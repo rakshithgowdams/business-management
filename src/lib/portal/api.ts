@@ -82,3 +82,19 @@ export function getStoredPortalSession(): { token: string; slug: string } | null
 export function clearPortalSession() {
   localStorage.removeItem(PORTAL_SESSION_KEY);
 }
+
+export async function trackDocumentDownload(sessionToken: string, documentId: string) {
+  return callPortalFunction({
+    action: 'track-download',
+    session_token: sessionToken,
+    document_id: documentId,
+  });
+}
+
+export async function getDocumentDownloadUrl(sessionToken: string, documentId: string) {
+  return callPortalFunction({
+    action: 'get-download-url',
+    session_token: sessionToken,
+    document_id: documentId,
+  });
+}

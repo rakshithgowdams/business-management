@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { LogOut, ChevronDown } from 'lucide-react';
-import { getPortalData, getStoredPortalSession, validatePortalSession, portalLogout, clearPortalSession } from '../../lib/portal/api';
+import { LogOut, ChevronDown, Sun, Moon } from 'lucide-react';
+import { getPortalData, getStoredPortalSession, validatePortalSession, portalLogout, clearPortalSession, trackDocumentDownload } from '../../lib/portal/api';
 import type { PortalPublicData, PortalSections } from '../../lib/portal/types';
+import { usePortalTheme } from '../../context/PortalThemeContext';
 import PortalHeroSection from './sections/PortalHeroSection';
 import PortalPortfolioSection from './sections/PortalPortfolioSection';
 import PortalCaseStudiesSection from './sections/PortalCaseStudiesSection';
@@ -11,19 +12,35 @@ import PortalServicesSection from './sections/PortalServicesSection';
 import PortalTeamSection from './sections/PortalTeamSection';
 import PortalDocumentsSection from './sections/PortalDocumentsSection';
 import PortalProjectsSection from './sections/PortalProjectsSection';
+import PortalAnnouncementsSection from './sections/PortalAnnouncementsSection';
+import PortalFAQSection from './sections/PortalFAQSection';
 
 const SECTION_ORDER: (keyof PortalSections)[] = [
-  'portfolio', 'case_studies', 'project_progress', 'services',
-  'testimonials', 'team', 'documents',
+  'announcements', 'portfolio', 'case_studies', 'project_progress', 'services',
+  'testimonials', 'team', 'documents', 'faq',
 ];
+
+const SECTION_LABELS: Record<string, string> = {
+  portfolio: 'Portfolio',
+  case_studies: 'Case Studies',
+  project_progress: 'Projects',
+  services: 'Services',
+  testimonials: 'Testimonials',
+  team: 'Our Team',
+  documents: 'Documents',
+  announcements: 'Updates',
+  faq: 'FAQ',
+};
 
 export default function PortalView() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { theme, toggleTheme, isDark } = usePortalTheme();
   const [data, setData] = useState<PortalPublicData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<string>('');
   const [showNav, setShowNav] = useState(false);
+  const [fadeIn, setFadeIn] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -46,6 +63,7 @@ export default function PortalView() {
         navigate(`/portal/${slug}`, { replace: true });
       } finally {
         setLoading(false);
+        setTimeout(() => setFadeIn(true), 50);
       }
     };
     init();
@@ -72,10 +90,19 @@ export default function PortalView() {
     trackSection(section);
   };
 
+  const handleDocumentDownload = async (documentId: string) => {
+    const stored = getStoredPortalSession();
+    if (!stored) return;
+    try { await trackDocumentDownload(stored.token, documentId); } catch { /* */ }
+  };
+
   if (loading || !data) {
     return (
-      <div className="min-h-screen bg-dark-900 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-gray-950' : 'bg-gray-50'}`}>
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'currentcolor', borderTopColor: 'transparent' }} />
+          <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Loading portal...</p>
+        </div>
       </div>
     );
   }
@@ -83,22 +110,11 @@ export default function PortalView() {
   const { portal, owner } = data;
   const sections = portal.sections;
   const color = portal.color || '#FF6B00';
-
-  const SECTION_LABELS: Record<string, string> = {
-    portfolio: 'Portfolio',
-    case_studies: 'Case Studies',
-    project_progress: 'Projects',
-    services: 'Services',
-    testimonials: 'Testimonials',
-    team: 'Our Team',
-    documents: 'Documents',
-  };
-
   const visibleSections = SECTION_ORDER.filter(s => sections[s]);
 
   return (
-    <div className="min-h-screen bg-dark-900">
-      <header className="sticky top-0 z-40 bg-dark-800/90 backdrop-blur-xl border-b border-white/[0.06]">
+    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      <header className={`sticky top-0 z-40 backdrop-blur-xl border-b transition-colors duration-300 ${isDark ? 'bg-gray-900/90 border-white/[0.06]' : 'bg-white/90 border-gray-200'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
@@ -111,7 +127,7 @@ export default function PortalView() {
               )}
               <div>
                 <h1 className="text-sm font-semibold">{portal.name}</h1>
-                {owner.business_name && <p className="text-[11px] text-gray-500">{owner.business_name}</p>}
+                {owner.business_name && <p className={`text-[11px] ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{owner.business_name}</p>}
               </div>
             </div>
 
@@ -120,33 +136,44 @@ export default function PortalView() {
                 <button
                   key={s}
                   onClick={() => handleSectionChange(s)}
-                  className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                    activeSection === s ? 'text-white font-medium' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
+                  className={`px-3 py-1.5 text-sm rounded-lg transition-all duration-200 ${
+                    activeSection === s
+                      ? 'font-medium shadow-sm'
+                      : isDark ? 'text-gray-400 hover:text-gray-200 hover:bg-white/5' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
                   }`}
-                  style={activeSection === s ? { backgroundColor: `${color}20`, color } : undefined}
+                  style={activeSection === s ? { backgroundColor: `${color}15`, color } : undefined}
                 >
                   {SECTION_LABELS[s]}
                 </button>
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={toggleTheme}
+                className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/5 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-800'}`}
+                title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
               <div className="md:hidden relative">
                 <button
                   onClick={() => setShowNav(!showNav)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-dark-700 text-sm text-gray-300"
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm ${isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'}`}
                 >
                   {SECTION_LABELS[activeSection]}
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showNav ? 'rotate-180' : ''}`} />
                 </button>
                 {showNav && (
-                  <div className="absolute right-0 top-full mt-1 bg-dark-700 border border-white/10 rounded-xl overflow-hidden shadow-xl min-w-[180px] z-50">
+                  <div className={`absolute right-0 top-full mt-1 border rounded-xl overflow-hidden shadow-xl min-w-[180px] z-50 ${isDark ? 'bg-gray-800 border-white/10' : 'bg-white border-gray-200'}`}>
                     {visibleSections.map(s => (
                       <button
                         key={s}
                         onClick={() => handleSectionChange(s)}
                         className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
-                          activeSection === s ? 'text-white bg-white/5' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                          activeSection === s
+                            ? isDark ? 'text-white bg-white/5' : 'text-gray-900 bg-gray-50'
+                            : isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                         }`}
                       >
                         {SECTION_LABELS[s]}
@@ -157,7 +184,7 @@ export default function PortalView() {
               </div>
               <button
                 onClick={handleLogout}
-                className="p-2 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition-colors"
+                className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/5 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-800'}`}
                 title="Logout"
               >
                 <LogOut className="w-4 h-4" />
@@ -169,7 +196,10 @@ export default function PortalView() {
 
       <PortalHeroSection portal={portal} owner={owner} color={color} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 transition-all duration-700 ${fadeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        {activeSection === 'announcements' && sections.announcements && (
+          <PortalAnnouncementsSection items={data.announcements} color={color} />
+        )}
         {activeSection === 'portfolio' && sections.portfolio && (
           <PortalPortfolioSection items={data.portfolio} color={color} />
         )}
@@ -189,14 +219,33 @@ export default function PortalView() {
           <PortalTeamSection items={data.team} color={color} />
         )}
         {activeSection === 'documents' && sections.documents && (
-          <PortalDocumentsSection items={data.documents} color={color} />
+          <PortalDocumentsSection items={data.documents} color={color} onDownload={handleDocumentDownload} />
+        )}
+        {activeSection === 'faq' && sections.faq && (
+          <PortalFAQSection items={data.faq} color={color} />
         )}
       </main>
 
-      <footer className="border-t border-white/[0.06] py-6">
-        <p className="text-center text-xs text-gray-600">
-          Powered by MyDesignNexus Client Portal
-        </p>
+      <footer className={`border-t py-8 transition-colors duration-300 ${isDark ? 'border-white/[0.06]' : 'border-gray-200'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              {portal.logo ? (
+                <img src={portal.logo} alt="" className="h-6 object-contain opacity-50" />
+              ) : (
+                <div className="w-6 h-6 rounded flex items-center justify-center text-white font-bold text-[10px] opacity-50" style={{ backgroundColor: color }}>
+                  {(owner.business_name || portal.name || '?')[0].toUpperCase()}
+                </div>
+              )}
+              <span className={`text-xs ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
+                {owner.business_name || portal.name}
+              </span>
+            </div>
+            <p className={`text-xs ${isDark ? 'text-gray-700' : 'text-gray-300'}`}>
+              Powered by MyDesignNexus Client Portal
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
   );

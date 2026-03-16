@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { TeamAuthProvider } from './context/TeamAuthContext';
+import { PortalThemeProvider } from './context/PortalThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import TeamProtectedRoute from './components/TeamProtectedRoute';
 import PermissionGate from './components/PermissionGate';
@@ -258,8 +259,8 @@ export default function App() {
         {teamRoutes('/management/dashboard')}
       </Route>
 
-      <Route path="/portal/:slug" element={<PortalLogin />} />
-      <Route path="/portal/:slug/view" element={<PortalView />} />
+      <Route path="/portal/:slug" element={<PortalThemeProvider><PortalLogin /></PortalThemeProvider>} />
+      <Route path="/portal/:slug/view" element={<PortalThemeProvider><PortalView /></PortalThemeProvider>} />
       <Route path="/website/preview/:subdomain" element={<WebsitePublicPreview />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

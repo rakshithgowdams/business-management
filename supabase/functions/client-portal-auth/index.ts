@@ -138,6 +138,12 @@ Deno.serve(async (req: Request) => {
     if (action === "regenerate-code") {
       return await handleRegenerateCode(body, req, admin);
     }
+    if (action === "track-download") {
+      return await handleTrackDownload(body, req, admin);
+    }
+    if (action === "get-download-url") {
+      return await handleGetDownloadUrl(body, req, admin);
+    }
 
     return jsonResponse({ error: "Unknown action" }, 400);
   } catch (err) {
@@ -488,6 +494,8 @@ async function handleGetPortalData(
     teamRes,
     documentsRes,
     sharedProjectsRes,
+    announcementsRes,
+    faqRes,
   ] = await Promise.all([
     sections.case_studies
       ? admin
@@ -544,6 +552,23 @@ async function handleGetPortalData(
           .eq("portal_id", portalId)
           .eq("is_visible", true)
       : Promise.resolve({ data: [] }),
+    sections.announcements
+      ? admin
+          .from("portal_announcements")
+          .select("*")
+          .eq("portal_id", portalId)
+          .eq("is_visible", true)
+          .order("is_pinned", { ascending: false })
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [] }),
+    sections.faq
+      ? admin
+          .from("portal_faq")
+          .select("*")
+          .eq("portal_id", portalId)
+          .eq("is_visible", true)
+          .order("sort_order")
+      : Promise.resolve({ data: [] }),
   ]);
 
   const { data: ownerProfile } = await admin
@@ -583,6 +608,120 @@ async function handleGetPortalData(
       team: teamRes.data || [],
       documents: documentsRes.data || [],
       shared_projects: sharedProjectsRes.data || [],
+      announcements: announcementsRes.data || [],
+      faq: faqRes.data || [],
     },
   });
+}
+
+async function handleTrackDownload(
+  body: Record<string, unknown>,
+  req: Request,
+  admin: ReturnType<typeof createClient>
+) {
+  const token =
+    typeof body.session_token === "string" ? body.session_token : "";
+  if (!token || !/^[a-f0-9]{96}$/.test(token)) {
+    return jsonResponse({ error: "Invalid session" }, 401);
+  }
+
+  const { data: session } = await admin
+    .from("portal_sessions")
+    .select("portal_id, expires_at")
+    .eq("session_token", token)
+    .maybeSingle();
+
+  if (!session || new Date(session.expires_at) < new Date()) {
+    return jsonResponse({ error: "Session expired" }, 401);
+  }
+
+  const documentId =
+    typeof body.document_id === "string" ? body.document_id : "";
+  if (!documentId) {
+    return jsonResponse({ error: "document_id required" }, 400);
+  }
+
+  const { data: doc } = await admin
+    .from("portal_shared_documents")
+    .select("id, download_count")
+    .eq("id", documentId)
+    .eq("portal_id", session.portal_id)
+    .maybeSingle();
+
+  if (!doc) {
+    return jsonResponse({ error: "Document not found" }, 404);
+  }
+
+  await admin
+    .from("portal_shared_documents")
+    .update({ download_count: (doc.download_count || 0) + 1 })
+    .eq("id", documentId);
+
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
+  await admin.from("portal_activity_log").insert({
+    portal_id: session.portal_id,
+    action: "download_document",
+    resource_type: "document",
+    resource_id: documentId,
+    ip_address: ip,
+    user_agent: req.headers.get("user-agent") || "",
+  });
+
+  return jsonResponse({ success: true });
+}
+
+async function handleGetDownloadUrl(
+  body: Record<string, unknown>,
+  req: Request,
+  admin: ReturnType<typeof createClient>
+) {
+  const token =
+    typeof body.session_token === "string" ? body.session_token : "";
+  if (!token || !/^[a-f0-9]{96}$/.test(token)) {
+    return jsonResponse({ error: "Invalid session" }, 401);
+  }
+
+  const { data: session } = await admin
+    .from("portal_sessions")
+    .select("portal_id, expires_at")
+    .eq("session_token", token)
+    .maybeSingle();
+
+  if (!session || new Date(session.expires_at) < new Date()) {
+    return jsonResponse({ error: "Session expired" }, 401);
+  }
+
+  const documentId =
+    typeof body.document_id === "string" ? body.document_id : "";
+  if (!documentId) {
+    return jsonResponse({ error: "document_id required" }, 400);
+  }
+
+  const { data: doc } = await admin
+    .from("portal_shared_documents")
+    .select("id, file_path, file_url")
+    .eq("id", documentId)
+    .eq("portal_id", session.portal_id)
+    .maybeSingle();
+
+  if (!doc) {
+    return jsonResponse({ error: "Document not found" }, 404);
+  }
+
+  if (doc.file_path) {
+    const { data: signedData } = await admin.storage
+      .from("portal-documents")
+      .createSignedUrl(doc.file_path, 300);
+
+    if (signedData?.signedUrl) {
+      return jsonResponse({ url: signedData.signedUrl });
+    }
+  }
+
+  if (doc.file_url) {
+    return jsonResponse({ url: doc.file_url });
+  }
+
+  return jsonResponse({ error: "No file available" }, 404);
 }

@@ -1,7 +1,12 @@
+import { useState, useEffect } from 'react';
 import { Calendar, DollarSign, CheckCircle } from 'lucide-react';
+import { usePortalTheme } from '../../../context/PortalThemeContext';
 import type { PortalSharedProject } from '../../../lib/portal/types';
 
-interface Props { items: PortalSharedProject[]; color: string; }
+interface Props {
+  items: PortalSharedProject[];
+  color: string;
+}
 
 const STATUS_STYLES: Record<string, string> = {
   'In Progress': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
@@ -11,19 +16,37 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 export default function PortalProjectsSection({ items, color }: Props) {
+  const { isDark } = usePortalTheme();
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
   if (items.length === 0) {
-    return <p className="text-center text-gray-500 py-12">No project updates available yet.</p>;
+    return (
+      <p className={`text-center py-12 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+        No project updates available yet.
+      </p>
+    );
   }
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold mb-2">Project Progress</h2>
-        <p className="text-gray-400">Track the status and progress of your projects</p>
+      <div
+        className={`transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+      >
+        <h2 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+          Project Progress
+        </h2>
+        <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+          Track the status and progress of your projects
+        </p>
       </div>
 
       <div className="space-y-5">
-        {items.map(item => {
+        {items.map((item, index) => {
           const project = item.projects;
           if (!project) return null;
 
@@ -38,13 +61,32 @@ export default function PortalProjectsSection({ items, color }: Props) {
           if (project.status === 'Completed') progressPercent = 100;
 
           return (
-            <div key={item.id} className="bg-dark-800 border border-white/[0.06] rounded-2xl p-6 hover:border-white/10 transition-all">
+            <div
+              key={item.id}
+              className={`rounded-2xl border p-6 transition-all duration-700 hover:shadow-lg ${
+                visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              } ${isDark
+                ? 'bg-gray-800/50 border-white/[0.06] hover:border-white/10'
+                : 'bg-white border-gray-200 hover:border-gray-300'
+              }`}
+              style={{ transitionDelay: `${(index + 1) * 100}ms` }}
+            >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold">{project.name}</h3>
-                  {project.description && <p className="text-sm text-gray-400 mt-1 line-clamp-2">{project.description}</p>}
+                  <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    {project.name}
+                  </h3>
+                  {project.description && (
+                    <p className={`text-sm mt-1 line-clamp-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {project.description}
+                    </p>
+                  )}
                 </div>
-                <span className={`px-3 py-1 text-xs font-medium rounded-lg border shrink-0 ${STATUS_STYLES[project.status] || 'bg-gray-500/10 text-gray-400 border-gray-500/20'}`}>
+                <span
+                  className={`px-3 py-1 text-xs font-medium rounded-lg border shrink-0 ${
+                    STATUS_STYLES[project.status] || 'bg-gray-500/10 text-gray-400 border-gray-500/20'
+                  }`}
+                >
                   {project.status}
                 </span>
               </div>
@@ -52,13 +94,23 @@ export default function PortalProjectsSection({ items, color }: Props) {
               {item.show_progress && (
                 <div className="mb-4">
                   <div className="flex items-center justify-between text-sm mb-2">
-                    <span className="text-gray-400">Progress</span>
-                    <span className="font-medium" style={{ color }}>{progressPercent}%</span>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Progress</span>
+                    <span className="font-medium" style={{ color }}>
+                      {progressPercent}%
+                    </span>
                   </div>
-                  <div className="h-2.5 bg-dark-700 rounded-full overflow-hidden">
+                  <div
+                    className={`h-2.5 rounded-full overflow-hidden ${
+                      isDark ? 'bg-gray-700' : 'bg-gray-200'
+                    }`}
+                  >
                     <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${progressPercent}%`, backgroundColor: color }}
+                      className="h-full rounded-full transition-all duration-1000 ease-out"
+                      style={{
+                        width: visible ? `${progressPercent}%` : '0%',
+                        backgroundColor: color,
+                        transitionDelay: `${(index + 1) * 100 + 300}ms`,
+                      }}
                     />
                   </div>
                 </div>
@@ -66,18 +118,23 @@ export default function PortalProjectsSection({ items, color }: Props) {
 
               <div className="flex flex-wrap gap-4">
                 {item.show_timeline && startDate && (
-                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <div className={`flex items-center gap-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     <Calendar className="w-4 h-4" style={{ color }} />
                     <span>
-                      {startDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                      {endDate && ` - ${endDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`}
+                      {startDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                      {endDate &&
+                        ` - ${endDate.toLocaleDateString('en-US', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}`}
                     </span>
                   </div>
                 )}
                 {item.show_budget && project.budget > 0 && (
-                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <div className={`flex items-center gap-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     <DollarSign className="w-4 h-4" style={{ color }} />
-                    <span>Budget: Rs.{project.budget.toLocaleString('en-IN')}</span>
+                    <span>Budget: ${project.budget.toLocaleString('en-US')}</span>
                   </div>
                 )}
                 {item.show_deliverables && project.status === 'Completed' && (
@@ -89,7 +146,11 @@ export default function PortalProjectsSection({ items, color }: Props) {
               </div>
 
               {item.custom_note && (
-                <div className="mt-4 p-3 rounded-xl bg-dark-700 text-sm text-gray-300">
+                <div
+                  className={`mt-4 p-3 rounded-xl text-sm ${
+                    isDark ? 'bg-gray-700/50 text-gray-300' : 'bg-gray-50 text-gray-600'
+                  }`}
+                >
                   {item.custom_note}
                 </div>
               )}

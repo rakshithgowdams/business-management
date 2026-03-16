@@ -27,6 +27,8 @@ export interface PortalSections {
   team: boolean;
   documents: boolean;
   project_progress: boolean;
+  announcements: boolean;
+  faq: boolean;
 }
 
 export interface PortalCaseStudy {
@@ -101,8 +103,35 @@ export interface PortalSharedDocument {
   document_name: string;
   document_type: string;
   file_url: string;
+  file_path: string;
   file_size: number;
   description: string;
+  download_count: number;
+  uploaded_via: string;
+  is_visible: boolean;
+  created_at: string;
+}
+
+export interface PortalAnnouncement {
+  id: string;
+  user_id: string;
+  portal_id: string;
+  title: string;
+  message: string;
+  priority: string;
+  is_pinned: boolean;
+  is_visible: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PortalFAQ {
+  id: string;
+  user_id: string;
+  portal_id: string;
+  question: string;
+  answer: string;
+  sort_order: number;
   is_visible: boolean;
   created_at: string;
 }
@@ -189,4 +218,6 @@ export interface PortalPublicData {
   team: PortalTeamMember[];
   documents: PortalSharedDocument[];
   shared_projects: PortalSharedProject[];
+  announcements: PortalAnnouncement[];
+  faq: PortalFAQ[];
 }

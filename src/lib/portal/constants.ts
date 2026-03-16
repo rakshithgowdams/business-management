@@ -6,6 +6,8 @@ export const PORTAL_SECTION_LABELS: Record<string, string> = {
   team: 'Our Team',
   documents: 'Documents',
   project_progress: 'Project Progress',
+  announcements: 'Announcements',
+  faq: 'FAQ',
 };
 
 export const PORTFOLIO_CATEGORIES = [
@@ -72,4 +74,20 @@ export const DEFAULT_SECTIONS = {
   team: true,
   documents: true,
   project_progress: true,
+  announcements: true,
+  faq: true,
+};
+
+export const ANNOUNCEMENT_PRIORITIES = [
+  'low',
+  'normal',
+  'high',
+  'urgent',
+] as const;
+
+export const PRIORITY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  low: { bg: 'bg-gray-500/10', text: 'text-gray-400', border: 'border-gray-500/20' },
+  normal: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20' },
+  high: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20' },
+  urgent: { bg: 'bg-red-500/10', text: 'text-red-400', border: 'border-red-500/20' },
 };

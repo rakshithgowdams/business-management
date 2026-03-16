@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Settings, Image, FileText, MessageSquareQuote, Briefcase, Users, FolderKanban, BarChart3, Eye } from 'lucide-react';
+import { ArrowLeft, Settings, Image, FileText, MessageSquareQuote, Briefcase, Users, FolderKanban, BarChart3, Eye, Megaphone, HelpCircle } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../context/AuthContext';
 import type { ClientPortal } from '../../../lib/portal/types';
@@ -13,6 +13,8 @@ import PortalTeamTab from './tabs/PortalTeamTab';
 import PortalDocumentsTab from './tabs/PortalDocumentsTab';
 import PortalProjectsTab from './tabs/PortalProjectsTab';
 import PortalAnalyticsTab from './tabs/PortalAnalyticsTab';
+import PortalAnnouncementsTab from './tabs/PortalAnnouncementsTab';
+import PortalFAQTab from './tabs/PortalFAQTab';
 
 const TABS = [
   { id: 'settings', label: 'Settings', icon: Settings },
@@ -23,6 +25,8 @@ const TABS = [
   { id: 'team', label: 'Team', icon: Users },
   { id: 'documents', label: 'Documents', icon: FolderKanban },
   { id: 'projects', label: 'Projects', icon: FolderKanban },
+  { id: 'announcements', label: 'Announcements', icon: Megaphone },
+  { id: 'faq', label: 'FAQ', icon: HelpCircle },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
 ] as const;
 
@@ -107,6 +111,8 @@ export default function PortalManager() {
       {activeTab === 'team' && <PortalTeamTab portal={portal} />}
       {activeTab === 'documents' && <PortalDocumentsTab portal={portal} />}
       {activeTab === 'projects' && <PortalProjectsTab portal={portal} />}
+      {activeTab === 'announcements' && <PortalAnnouncementsTab portal={portal} />}
+      {activeTab === 'faq' && <PortalFAQTab portal={portal} />}
       {activeTab === 'analytics' && <PortalAnalyticsTab portal={portal} />}
     </div>
   );
