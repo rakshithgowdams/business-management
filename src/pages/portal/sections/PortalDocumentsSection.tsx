@@ -7,7 +7,7 @@ import type { PortalSharedDocument } from '../../../lib/portal/types';
 interface Props {
   items: PortalSharedDocument[];
   color: string;
-  onDownload?: (id: string) => void;
+  onDownload?: (id: string) => Promise<string | null>;
 }
 
 function formatFileSize(bytes: number): string {
@@ -42,14 +42,26 @@ function useInView(threshold = 0.1) {
 export default function PortalDocumentsSection({ items, color, onDownload }: Props) {
   const { isDark } = usePortalTheme();
   const { ref, inView } = useInView();
+  const [downloading, setDownloading] = useState<string | null>(null);
 
   if (items.length === 0) {
     return <p className={`text-center py-12 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>No documents shared yet.</p>;
   }
 
-  const handleDownload = (item: PortalSharedDocument) => {
-    if (onDownload) onDownload(item.id);
-    if (item.file_url) window.open(item.file_url, '_blank');
+  const handleDownload = async (item: PortalSharedDocument) => {
+    setDownloading(item.id);
+    try {
+      if (onDownload) {
+        const url = await onDownload(item.id);
+        if (url) {
+          window.open(url, '_blank');
+          return;
+        }
+      }
+      if (item.file_url) window.open(item.file_url, '_blank');
+    } finally {
+      setDownloading(null);
+    }
   };
 
   return (
@@ -99,14 +111,19 @@ export default function PortalDocumentsSection({ items, color, onDownload }: Pro
                     </span>
                   )}
                 </div>
-                {item.file_url && (
+                {(item.file_url || item.file_path) && (
                   <button
                     onClick={() => handleDownload(item)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-105 active:scale-95"
+                    disabled={downloading === item.id}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
                     style={{ backgroundColor: `${color}15`, color }}
                   >
-                    <Download className="w-3.5 h-3.5" />
-                    Download
+                    {downloading === item.id ? (
+                      <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Download className="w-3.5 h-3.5" />
+                    )}
+                    {downloading === item.id ? 'Loading...' : 'Download'}
                   </button>
                 )}
               </div>

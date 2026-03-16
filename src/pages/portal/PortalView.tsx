@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { LogOut, ChevronDown, Sun, Moon } from 'lucide-react';
-import { getPortalData, getStoredPortalSession, validatePortalSession, portalLogout, clearPortalSession, trackDocumentDownload } from '../../lib/portal/api';
+import { getPortalData, getStoredPortalSession, validatePortalSession, portalLogout, clearPortalSession, trackDocumentDownload, getDocumentDownloadUrl } from '../../lib/portal/api';
 import type { PortalPublicData, PortalSections } from '../../lib/portal/types';
 import { usePortalTheme } from '../../context/PortalThemeContext';
 import PortalHeroSection from './sections/PortalHeroSection';
@@ -92,10 +92,18 @@ export default function PortalView() {
     trackSection(section);
   };
 
-  const handleDocumentDownload = async (documentId: string) => {
+  const handleDocumentDownload = async (documentId: string): Promise<string | null> => {
     const stored = getStoredPortalSession();
-    if (!stored) return;
-    try { await trackDocumentDownload(stored.token, documentId); } catch { /* */ }
+    if (!stored) return null;
+    try {
+      const [urlRes] = await Promise.all([
+        getDocumentDownloadUrl(stored.token, documentId),
+        trackDocumentDownload(stored.token, documentId).catch(() => {}),
+      ]);
+      return urlRes?.url || null;
+    } catch {
+      return null;
+    }
   };
 
   if (loading || !data) {

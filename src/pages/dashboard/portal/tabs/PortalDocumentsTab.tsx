@@ -93,11 +93,7 @@ export default function PortalDocumentsTab({ portal }: Props) {
 
     if (error) throw error;
 
-    const { data: urlData } = supabase.storage
-      .from('portal-documents')
-      .getPublicUrl(path);
-
-    return { path, url: urlData.publicUrl };
+    return { path, url: '' };
   };
 
   const handleSave = async () => {
