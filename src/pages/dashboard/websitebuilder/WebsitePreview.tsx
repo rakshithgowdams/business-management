@@ -11,7 +11,7 @@ interface Props {
 
 const widthMap = { desktop: '100%', tablet: '768px', mobile: '375px' };
 
-function PreviewSection({ section, project }: { section: WebsiteSection; project: WebsiteProject | null }) {
+function PreviewSection({ section, project, isMobile }: { section: WebsiteSection; project: WebsiteProject | null; isMobile: boolean }) {
   const c = section.config as Record<string, unknown>;
   const primary = project?.theme_color || '#f97316';
   const font = project?.font_family || 'Inter';
@@ -23,34 +23,38 @@ function PreviewSection({ section, project }: { section: WebsiteSection; project
     const logoUrl = c.logo_url as string | undefined;
     const isSticky = c.sticky !== false;
     const isTransparent = c.transparent !== false;
-    const headerBg = isTransparent ? 'transparent' : '#0a0c10';
+    const headerBg = isTransparent ? 'rgba(10,12,16,0.6)' : '#0a0c10';
     const headerBorder = isTransparent ? 'none' : '1px solid rgba(255,255,255,0.07)';
     return (
       <header
-        style={{ ...style, backgroundColor: headerBg, borderBottom: headerBorder, position: isSticky ? 'sticky' : 'relative', top: 0, zIndex: 10 }}
-        className="px-6 py-4 flex items-center justify-between"
+        style={{ ...style, backgroundColor: headerBg, borderBottom: headerBorder, position: isSticky ? 'sticky' : 'relative', top: 0, zIndex: 10, backdropFilter: isTransparent ? 'blur(12px)' : undefined }}
+        className="px-4 py-3 flex items-center justify-between"
       >
         <div className="flex items-center gap-2">
           {logoUrl ? (
-            <img src={logoUrl} alt="Logo" className="h-8 max-w-[120px] object-contain" />
+            <img src={logoUrl} alt="Logo" className="h-7 max-w-[100px] object-contain" />
           ) : (
             <span style={{ background: `linear-gradient(135deg, ${primary}, ${primary}bb)` }} className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-black text-xs">
               B
             </span>
           )}
         </div>
-        <nav className="hidden md:flex gap-1">
-          {links.slice(0, 5).map((l, i) => <a key={i} href={l.href} className="text-xs text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/[0.05]">{l.label}</a>)}
-        </nav>
+        {!isMobile && (
+          <nav className="flex gap-0.5">
+            {links.slice(0, 5).map((l, i) => <a key={i} href={l.href} className="text-[11px] text-gray-400 hover:text-white transition-colors px-2.5 py-1 rounded-lg hover:bg-white/[0.05]">{l.label}</a>)}
+          </nav>
+        )}
         <div className="flex items-center gap-2">
-          {c.show_cta !== false && (
-            <button style={{ backgroundColor: primary }} className="text-white text-xs font-semibold px-3 py-1.5 rounded-lg hidden md:block">
+          {c.show_cta !== false && !isMobile && (
+            <button style={{ backgroundColor: primary }} className="text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg">
               {(c.cta_text as string) || 'Get Started'}
             </button>
           )}
-          <div className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-white/[0.06] text-gray-400">
-            <Menu className="w-4 h-4" />
-          </div>
+          {isMobile && (
+            <div className="w-7 h-7 flex items-center justify-center rounded-lg bg-white/[0.06] text-gray-400">
+              <Menu className="w-3.5 h-3.5" />
+            </div>
+          )}
         </div>
       </header>
     );
@@ -60,30 +64,31 @@ function PreviewSection({ section, project }: { section: WebsiteSection; project
     const layout = (c.layout as string) || 'left';
     const stats = (c.stats as { value: string; label: string }[]) || [];
     const bgStyle = c.bg_style === 'image' && c.bg_value ? { backgroundImage: `url(${c.bg_value})`, backgroundSize: 'cover', backgroundPosition: 'center' } : c.bg_style === 'gradient' ? { background: c.bg_value as string || 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' } : { backgroundColor: (c.bg_value as string) || '#0f172a' };
+    const flexDir = isMobile || layout === 'centered' ? 'flex-col text-center' : layout === 'right' ? 'flex-row-reverse' : 'flex-row';
     return (
-      <section style={{ ...bgStyle, ...style }} className="px-6 py-16">
-        <div className={`max-w-5xl mx-auto flex gap-8 items-center ${layout === 'centered' ? 'flex-col text-center' : layout === 'right' ? 'flex-row-reverse' : 'flex-row'}`}>
-          <div className="flex-1 space-y-4">
-            {c.show_badge && <span style={{ backgroundColor: `${primary}20`, color: primary }} className="inline-block text-xs font-semibold px-3 py-1 rounded-full">{(c.badge_text as string) || 'New'}</span>}
-            <h1 className="text-2xl font-bold text-white leading-tight">{(c.headline as string) || 'Welcome'}</h1>
-            {c.subheadline && <p className="text-base font-semibold text-gray-300">{c.subheadline as string}</p>}
-            {c.body_text && <p className="text-sm text-gray-400 leading-relaxed">{c.body_text as string}</p>}
-            <div className="flex gap-3 flex-wrap">
+      <section style={{ ...bgStyle, ...style }} className={`px-5 ${isMobile ? 'py-10' : 'py-16'}`}>
+        <div className={`max-w-5xl mx-auto flex gap-6 items-center ${flexDir}`}>
+          <div className="flex-1 space-y-3">
+            {c.show_badge && <span style={{ backgroundColor: `${primary}20`, color: primary }} className="inline-block text-[11px] font-semibold px-3 py-1 rounded-full">{(c.badge_text as string) || 'New'}</span>}
+            <h1 className={`font-bold text-white leading-tight ${isMobile ? 'text-xl' : 'text-2xl'}`}>{(c.headline as string) || 'Welcome'}</h1>
+            {c.subheadline && <p className={`font-semibold text-gray-300 ${isMobile ? 'text-sm' : 'text-base'}`}>{c.subheadline as string}</p>}
+            {c.body_text && <p className="text-xs text-gray-400 leading-relaxed">{c.body_text as string}</p>}
+            <div className={`flex gap-3 flex-wrap ${isMobile || layout === 'centered' ? 'justify-center' : ''}`}>
               <button style={{ backgroundColor: primary }} className="text-white text-xs font-bold px-4 py-2 rounded-lg">{(c.cta_primary_text as string) || 'Get Started'}</button>
               {c.show_secondary_cta && <button className="text-white text-xs font-semibold px-4 py-2 rounded-lg border border-white/20">{(c.cta_secondary_text as string) || 'Learn More'}</button>}
             </div>
             {c.show_stats && stats.length > 0 && (
-              <div className="flex gap-6 pt-2">
+              <div className={`flex gap-4 pt-2 ${isMobile || layout === 'centered' ? 'justify-center' : ''}`}>
                 {stats.map((s, i) => (
                   <div key={i}>
                     <div style={{ color: primary }} className="text-lg font-bold">{s.value}</div>
-                    <div className="text-xs text-gray-500">{s.label}</div>
+                    <div className="text-[10px] text-gray-500">{s.label}</div>
                   </div>
                 ))}
               </div>
             )}
           </div>
-          {c.image_url && layout !== 'centered' && (
+          {c.image_url && !isMobile && layout !== 'centered' && (
             <div className="flex-1">
               <img src={c.image_url as string} alt="Hero" className="w-full rounded-xl object-cover max-h-64" />
             </div>
@@ -324,14 +329,14 @@ function PreviewSection({ section, project }: { section: WebsiteSection; project
 
   if (section.section_type === 'contact') {
     return (
-      <section style={{ ...style, backgroundColor: '#080a0f' }} className="px-6 py-16">
+      <section style={{ ...style, backgroundColor: '#080a0f' }} className={`px-5 ${isMobile ? 'py-10' : 'py-16'}`}>
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
+          <div className="text-center mb-8">
             {c.heading && <h2 className="text-xl font-bold text-white mb-2">{c.heading as string}</h2>}
             {c.subheading && <p className="text-sm text-gray-400">{c.subheading as string}</p>}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4">
+          <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
+            <div className="space-y-3">
               {c.email && <div className="flex items-center gap-3 text-sm text-gray-300"><Mail className="w-4 h-4 shrink-0" style={{ color: primary }} />{c.email as string}</div>}
               {c.phone && <div className="flex items-center gap-3 text-sm text-gray-300"><Phone className="w-4 h-4 shrink-0" style={{ color: primary }} />{c.phone as string}</div>}
               {c.whatsapp && <div className="flex items-center gap-3 text-sm text-gray-300"><MessageCircle className="w-4 h-4 shrink-0" style={{ color: '#25d366' }} />WhatsApp: {c.whatsapp as string}</div>}
@@ -372,8 +377,8 @@ function PreviewSection({ section, project }: { section: WebsiteSection; project
   if (section.section_type === 'free_call') {
     const benefits = (c.benefits as string[]) || [];
     return (
-      <section style={{ ...style, backgroundColor: '#0d1117' }} className="px-6 py-16">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+      <section style={{ ...style, backgroundColor: '#0d1117' }} className={`px-5 ${isMobile ? 'py-10' : 'py-16'}`}>
+        <div className={`max-w-5xl mx-auto grid gap-6 items-center ${isMobile ? 'grid-cols-1' : 'grid-cols-2'}`}>
           <div>
             {c.heading && <h2 className="text-xl font-bold text-white mb-2">{c.heading as string}</h2>}
             {c.subheading && <p style={{ color: primary }} className="text-sm font-semibold mb-3">{c.subheading as string}</p>}
@@ -397,9 +402,9 @@ function PreviewSection({ section, project }: { section: WebsiteSection; project
     const columns = (c.columns as { heading: string; links: { label: string; href: string }[] }[]) || [];
     const socialLinks = (c.social_links as { platform: string; url: string }[]) || [];
     return (
-      <footer style={{ ...style, backgroundColor: '#050608', borderTop: '1px solid rgba(255,255,255,0.07)' }} className="px-6 pt-12 pb-6">
+      <footer style={{ ...style, backgroundColor: '#050608', borderTop: '1px solid rgba(255,255,255,0.07)' }} className={`px-5 pt-10 pb-5`}>
         <div className="max-w-5xl mx-auto">
-          <div className={`grid gap-8 mb-10 ${columns.length > 0 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2'}`}>
+          <div className={`grid gap-6 mb-8 ${isMobile ? 'grid-cols-1' : columns.length > 0 ? 'grid-cols-4' : 'grid-cols-2'}`}>
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span style={{ background: `linear-gradient(135deg, ${primary}, ${primary}bb)` }} className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-black text-xs">
@@ -423,8 +428,8 @@ function PreviewSection({ section, project }: { section: WebsiteSection; project
               </div>
             ))}
           </div>
-          <div className="border-t border-white/[0.05] pt-5 flex items-center justify-between">
-            <p className="text-[10px] text-gray-600">{(c.copyright_text as string) || `© ${new Date().getFullYear()} ${(c.brand_name as string) || 'My Business'}. All rights reserved.`}</p>
+          <div className="border-t border-white/[0.05] pt-4 flex items-center justify-between">
+            <p className="text-[10px] text-gray-600">{(c.copyright_text as string) || `\u00A9 ${new Date().getFullYear()} ${(c.brand_name as string) || 'My Business'}. All rights reserved.`}</p>
             <p className="text-[10px] text-gray-700">Back to top ↑</p>
           </div>
         </div>
@@ -449,6 +454,8 @@ export default function WebsitePreview({ sections, project, mode }: Props) {
     [sections]
   );
 
+  const isMobile = mode === 'mobile';
+
   const googleFontsUrl = useMemo(() =>
     project?.font_family && !['Inter', 'system-ui'].includes(project.font_family)
       ? `https://fonts.googleapis.com/css2?family=${encodeURIComponent(project.font_family)}:wght@300;400;500;600;700;800&display=swap`
@@ -470,7 +477,7 @@ export default function WebsitePreview({ sections, project, mode }: Props) {
           </div>
         ) : (
           enabledSections.map(section => (
-            <PreviewSection key={section.id} section={section} project={project} />
+            <PreviewSection key={section.id} section={section} project={project} isMobile={isMobile} />
           ))
         )}
       </div>

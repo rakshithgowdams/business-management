@@ -119,6 +119,15 @@ function CtaLinkField({ value, onChange }: { value: string; onChange: (v: string
     return 'url';
   };
   const [type, setType] = useState<CtaLinkType>(() => detect(value));
+  const prevValueRef = useRef(value);
+
+  useEffect(() => {
+    const prev = prevValueRef.current;
+    prevValueRef.current = value;
+    if (detect(prev) !== detect(value)) {
+      setType(detect(value));
+    }
+  }, [value]);
 
   const handleTypeChange = (t: CtaLinkType) => {
     setType(t);
