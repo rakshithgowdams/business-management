@@ -14,11 +14,24 @@ export default function WebsitePublicPreview() {
   useEffect(() => {
     if (!subdomain) return;
     (async () => {
-      const { data: proj } = await supabase
+      let proj = null;
+
+      const { data: bySubdomain } = await supabase
         .from('website_projects')
         .select('*')
         .eq('subdomain', subdomain)
         .maybeSingle();
+
+      if (bySubdomain) {
+        proj = bySubdomain;
+      } else {
+        const { data: byId } = await supabase
+          .from('website_projects')
+          .select('*')
+          .eq('id', subdomain)
+          .maybeSingle();
+        if (byId) proj = byId;
+      }
 
       if (!proj) {
         setNotFound(true);

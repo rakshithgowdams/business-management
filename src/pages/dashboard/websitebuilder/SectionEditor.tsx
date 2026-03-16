@@ -200,6 +200,13 @@ export default function SectionEditor({ section, project, onSave, onClose, savin
 
   const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => {
+    setConfig(section.config || {});
+    setAnimation(section.animation);
+    setLabel(section.label);
+    setOpenGroup('content');
+  }, [section.id]);
+
   const notifyPreview = useCallback((newConfig: Record<string, unknown>, newAnimation: SectionAnimation, newLabel: string) => {
     if (!onPreviewChange) return;
     if (previewTimerRef.current) clearTimeout(previewTimerRef.current);
@@ -380,6 +387,37 @@ export default function SectionEditor({ section, project, onSave, onClose, savin
       </>
     );
 
+    if (t === 'stats') return (
+      <>
+        <Group id="content" title="Content">
+          <Field label="Heading"><Input value={(c.heading as string) || ''} onChange={v => set('heading', v)} /></Field>
+          <Field label="Subheading"><Input value={(c.subheading as string) || ''} onChange={v => set('subheading', v)} /></Field>
+        </Group>
+        <Group id="items" title="Stat Items">
+          {((c.items as { value: string; label: string; icon: string; prefix: string; suffix: string }[]) || []).map((item, i) => (
+            <div key={i} className="p-3 bg-white/[0.02] rounded-xl border border-white/[0.05] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-gray-400">Stat {i + 1}</span>
+                <button onClick={() => removeFromArr('items', i)} className="text-red-400/60 hover:text-red-400 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+              </div>
+              <Field label="Icon">
+                <Select value={item.icon || 'Star'} onChange={v => setArr('items', i, 'icon', v)} options={ICON_OPTIONS.map(o => ({ value: o, label: o }))} />
+              </Field>
+              <div className="grid grid-cols-3 gap-2">
+                <Field label="Prefix"><Input value={item.prefix || ''} onChange={v => setArr('items', i, 'prefix', v)} placeholder="" /></Field>
+                <Field label="Value"><Input value={item.value} onChange={v => setArr('items', i, 'value', v)} placeholder="500" /></Field>
+                <Field label="Suffix"><Input value={item.suffix || ''} onChange={v => setArr('items', i, 'suffix', v)} placeholder="+" /></Field>
+              </div>
+              <Field label="Label"><Input value={item.label} onChange={v => setArr('items', i, 'label', v)} placeholder="Happy Clients" /></Field>
+            </div>
+          ))}
+          <button onClick={() => addToArr('items', { value: '0', label: 'New Stat', icon: 'Star', prefix: '', suffix: '+' })} className="flex items-center gap-2 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+            <Plus className="w-3.5 h-3.5" /> Add Stat
+          </button>
+        </Group>
+      </>
+    );
+
     if (t === 'about') return (
       <Group id="content" title="Content">
         <Field label="Heading"><Input value={(c.heading as string) || ''} onChange={v => set('heading', v)} /></Field>
@@ -517,6 +555,73 @@ export default function SectionEditor({ section, project, onSave, onClose, savin
       </>
     );
 
+    if (t === 'gallery') return (
+      <>
+        <Group id="content" title="Content">
+          <Field label="Heading"><Input value={(c.heading as string) || ''} onChange={v => set('heading', v)} /></Field>
+          <Field label="Subheading"><Input value={(c.subheading as string) || ''} onChange={v => set('subheading', v)} /></Field>
+          <Field label="Columns">
+            <Select value={String(c.columns || 3)} onChange={v => set('columns', Number(v))} options={[{ value: '2', label: '2 Columns' }, { value: '3', label: '3 Columns' }, { value: '4', label: '4 Columns' }]} />
+          </Field>
+          <Toggle value={!!(c.show_captions)} onChange={v => set('show_captions', v)} label="Show Captions on Hover" />
+        </Group>
+        <Group id="images" title="Gallery Images">
+          {((c.images as { url: string; alt: string; caption: string }[]) || []).map((img, i) => (
+            <div key={i} className="p-3 bg-white/[0.02] rounded-xl border border-white/[0.05] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-gray-400">Image {i + 1}</span>
+                <button onClick={() => removeFromArr('images', i)} className="text-red-400/60 hover:text-red-400 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+              </div>
+              <Field label="Image URL"><Input value={img.url} onChange={v => setArr('images', i, 'url', v)} placeholder="https://images.pexels.com/..." /></Field>
+              <Field label="Alt Text"><Input value={img.alt} onChange={v => setArr('images', i, 'alt', v)} placeholder="Image description" /></Field>
+              <Field label="Caption"><Input value={img.caption || ''} onChange={v => setArr('images', i, 'caption', v)} placeholder="Caption text" /></Field>
+              {img.url && (
+                <div className="w-full h-20 rounded-lg border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+                  <img src={img.url} alt={img.alt} className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                </div>
+              )}
+            </div>
+          ))}
+          <button onClick={() => addToArr('images', { url: '', alt: 'New Image', caption: '', category: '' })} className="flex items-center gap-2 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+            <Plus className="w-3.5 h-3.5" /> Add Image
+          </button>
+        </Group>
+      </>
+    );
+
+    if (t === 'blog') return (
+      <>
+        <Group id="content" title="Content">
+          <Field label="Heading"><Input value={(c.heading as string) || ''} onChange={v => set('heading', v)} /></Field>
+          <Field label="Subheading"><Input value={(c.subheading as string) || ''} onChange={v => set('subheading', v)} /></Field>
+          <Field label="Columns">
+            <Select value={String(c.columns || 3)} onChange={v => set('columns', Number(v))} options={[{ value: '2', label: '2 Columns' }, { value: '3', label: '3 Columns' }]} />
+          </Field>
+        </Group>
+        <Group id="posts" title="Blog Posts">
+          {((c.posts as { title: string; excerpt: string; image_url: string; date: string; author: string; tag: string }[]) || []).map((post, i) => (
+            <div key={i} className="p-3 bg-white/[0.02] rounded-xl border border-white/[0.05] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-gray-400">Post {i + 1}</span>
+                <button onClick={() => removeFromArr('posts', i)} className="text-red-400/60 hover:text-red-400 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+              </div>
+              <Field label="Title"><Input value={post.title} onChange={v => setArr('posts', i, 'title', v)} /></Field>
+              <Field label="Excerpt"><Input value={post.excerpt} onChange={v => setArr('posts', i, 'excerpt', v)} textarea /></Field>
+              <Field label="Image URL"><Input value={post.image_url || ''} onChange={v => setArr('posts', i, 'image_url', v)} placeholder="https://images.pexels.com/..." /></Field>
+              <div className="grid grid-cols-2 gap-2">
+                <Field label="Author"><Input value={post.author} onChange={v => setArr('posts', i, 'author', v)} /></Field>
+                <Field label="Tag"><Input value={post.tag} onChange={v => setArr('posts', i, 'tag', v)} placeholder="Business" /></Field>
+              </div>
+              <Field label="Date"><Input value={post.date} onChange={v => setArr('posts', i, 'date', v)} placeholder="2025-01-15" /></Field>
+            </div>
+          ))}
+          <button onClick={() => addToArr('posts', { title: 'New Post', excerpt: 'Post excerpt...', image_url: '', date: new Date().toISOString().split('T')[0], author: 'Author', tag: 'General', link: '#' })} className="flex items-center gap-2 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+            <Plus className="w-3.5 h-3.5" /> Add Post
+          </button>
+        </Group>
+      </>
+    );
+
     if (t === 'contact') return (
       <Group id="content" title="Contact Info">
         <Field label="Heading"><Input value={(c.heading as string) || ''} onChange={v => set('heading', v)} /></Field>
@@ -546,29 +651,136 @@ export default function SectionEditor({ section, project, onSave, onClose, savin
     );
 
     if (t === 'free_call') return (
-      <Group id="content" title="Content">
-        <Field label="Heading"><Input value={(c.heading as string) || ''} onChange={v => set('heading', v)} /></Field>
-        <Field label="Subheading"><Input value={(c.subheading as string) || ''} onChange={v => set('subheading', v)} /></Field>
-        <Field label="Body Text"><Input value={(c.body_text as string) || ''} onChange={v => set('body_text', v)} textarea /></Field>
-        <Field label="CTA Text"><Input value={(c.cta_text as string) || ''} onChange={v => set('cta_text', v)} /></Field>
-        <Field label="Calendar / Booking URL"><Input value={(c.calendar_url as string) || ''} onChange={v => set('calendar_url', v)} placeholder="https://calendly.com/..." /></Field>
-        <Field label="Meeting Duration"><Input value={(c.meeting_duration as string) || ''} onChange={v => set('meeting_duration', v)} placeholder="30 minutes" /></Field>
-        <Toggle value={!!(c.show_benefits)} onChange={v => set('show_benefits', v)} label="Show Benefits" />
-        <Toggle value={!!(c.show_image)} onChange={v => set('show_image', v)} label="Show Image" />
-        <Field label="Image URL"><Input value={(c.image_url as string) || ''} onChange={v => set('image_url', v)} placeholder="https://..." /></Field>
-      </Group>
+      <>
+        <Group id="content" title="Content">
+          <Field label="Heading"><Input value={(c.heading as string) || ''} onChange={v => set('heading', v)} /></Field>
+          <Field label="Subheading"><Input value={(c.subheading as string) || ''} onChange={v => set('subheading', v)} /></Field>
+          <Field label="Body Text"><Input value={(c.body_text as string) || ''} onChange={v => set('body_text', v)} textarea /></Field>
+          <Field label="CTA Text"><Input value={(c.cta_text as string) || ''} onChange={v => set('cta_text', v)} /></Field>
+          <Field label="Calendar / Booking URL"><Input value={(c.calendar_url as string) || ''} onChange={v => set('calendar_url', v)} placeholder="https://calendly.com/..." /></Field>
+          <Field label="Meeting Duration"><Input value={(c.meeting_duration as string) || ''} onChange={v => set('meeting_duration', v)} placeholder="30 minutes" /></Field>
+          <Toggle value={!!(c.show_image)} onChange={v => set('show_image', v)} label="Show Image" />
+          <Field label="Image URL"><Input value={(c.image_url as string) || ''} onChange={v => set('image_url', v)} placeholder="https://..." /></Field>
+        </Group>
+        <Group id="benefits" title="Benefits">
+          <Toggle value={!!(c.show_benefits)} onChange={v => set('show_benefits', v)} label="Show Benefits List" />
+          {((c.benefits as string[]) || []).map((b, i) => (
+            <div key={i} className="flex gap-1 items-start">
+              <Input value={b} onChange={v => {
+                const arr = [...((c.benefits as string[]) || [])];
+                arr[i] = v;
+                set('benefits', arr);
+              }} placeholder="Benefit item" />
+              <button onClick={() => {
+                const arr = ((c.benefits as string[]) || []).filter((_, j) => j !== i);
+                set('benefits', arr);
+              }} className="w-8 h-9 flex items-center justify-center rounded-lg hover:bg-red-500/10 text-gray-600 hover:text-red-400 transition-colors shrink-0">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+          <button onClick={() => set('benefits', [...((c.benefits as string[]) || []), 'New benefit'])} className="flex items-center gap-2 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+            <Plus className="w-3.5 h-3.5" /> Add Benefit
+          </button>
+        </Group>
+      </>
     );
 
     if (t === 'footer') return (
-      <Group id="content" title="Footer Content">
-        <Field label="Brand Name"><Input value={(c.brand_name as string) || ''} onChange={v => set('brand_name', v)} /></Field>
-        <Field label="Brand Description"><Input value={(c.brand_description as string) || ''} onChange={v => set('brand_description', v)} textarea /></Field>
-        <Field label="Logo URL"><Input value={(c.logo_url as string) || ''} onChange={v => set('logo_url', v)} placeholder="https://..." /></Field>
-        <Field label="Copyright Text"><Input value={(c.copyright_text as string) || ''} onChange={v => set('copyright_text', v)} /></Field>
-        <Toggle value={!!(c.show_social)} onChange={v => set('show_social', v)} label="Show Social Links" />
-        <Toggle value={!!(c.show_newsletter)} onChange={v => set('show_newsletter', v)} label="Show Newsletter Signup" />
-        <Field label="Newsletter Text"><Input value={(c.newsletter_text as string) || ''} onChange={v => set('newsletter_text', v)} /></Field>
-      </Group>
+      <>
+        <Group id="content" title="Footer Content">
+          <Field label="Brand Name"><Input value={(c.brand_name as string) || ''} onChange={v => set('brand_name', v)} /></Field>
+          <Field label="Brand Description"><Input value={(c.brand_description as string) || ''} onChange={v => set('brand_description', v)} textarea /></Field>
+          <Field label="Logo URL"><Input value={(c.logo_url as string) || ''} onChange={v => set('logo_url', v)} placeholder="https://..." /></Field>
+          <Field label="Copyright Text"><Input value={(c.copyright_text as string) || ''} onChange={v => set('copyright_text', v)} /></Field>
+          <Toggle value={!!(c.show_newsletter)} onChange={v => set('show_newsletter', v)} label="Show Newsletter Signup" />
+          {c.show_newsletter && (
+            <Field label="Newsletter Text"><Input value={(c.newsletter_text as string) || ''} onChange={v => set('newsletter_text', v)} /></Field>
+          )}
+        </Group>
+        <Group id="columns" title="Footer Columns">
+          {((c.columns as { heading: string; links: { label: string; href: string }[] }[]) || []).map((col, ci) => (
+            <div key={ci} className="p-3 bg-white/[0.02] rounded-xl border border-white/[0.05] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-gray-400">Column {ci + 1}</span>
+                <button onClick={() => removeFromArr('columns', ci)} className="text-red-400/60 hover:text-red-400 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+              </div>
+              <Field label="Column Heading"><Input value={col.heading} onChange={v => setArr('columns', ci, 'heading', v)} /></Field>
+              <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Links</p>
+              {(col.links || []).map((link, li) => (
+                <div key={li} className="grid grid-cols-2 gap-1 items-start">
+                  <input
+                    value={link.label}
+                    onChange={e => {
+                      const cols = [...((c.columns as { heading: string; links: { label: string; href: string }[] }[]) || [])];
+                      const links = [...cols[ci].links];
+                      links[li] = { ...links[li], label: e.target.value };
+                      cols[ci] = { ...cols[ci], links };
+                      set('columns', cols);
+                    }}
+                    placeholder="Label"
+                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-2 py-1.5 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-orange-500/40"
+                  />
+                  <div className="flex gap-1">
+                    <input
+                      value={link.href}
+                      onChange={e => {
+                        const cols = [...((c.columns as { heading: string; links: { label: string; href: string }[] }[]) || [])];
+                        const links = [...cols[ci].links];
+                        links[li] = { ...links[li], href: e.target.value };
+                        cols[ci] = { ...cols[ci], links };
+                        set('columns', cols);
+                      }}
+                      placeholder="#section"
+                      className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-2 py-1.5 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-orange-500/40"
+                    />
+                    <button onClick={() => {
+                      const cols = [...((c.columns as { heading: string; links: { label: string; href: string }[] }[]) || [])];
+                      cols[ci] = { ...cols[ci], links: cols[ci].links.filter((_, j) => j !== li) };
+                      set('columns', cols);
+                    }} className="w-7 h-7 flex items-center justify-center rounded hover:bg-red-500/10 text-gray-600 hover:text-red-400 transition-colors shrink-0">
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <button onClick={() => {
+                const cols = [...((c.columns as { heading: string; links: { label: string; href: string }[] }[]) || [])];
+                cols[ci] = { ...cols[ci], links: [...(cols[ci].links || []), { label: 'New Link', href: '#' }] };
+                set('columns', cols);
+              }} className="flex items-center gap-1 text-[10px] text-orange-400 hover:text-orange-300 transition-colors">
+                <Plus className="w-3 h-3" /> Add Link
+              </button>
+            </div>
+          ))}
+          <button onClick={() => addToArr('columns', { heading: 'New Column', links: [{ label: 'Link', href: '#' }] })} className="flex items-center gap-2 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+            <Plus className="w-3.5 h-3.5" /> Add Column
+          </button>
+        </Group>
+        <Group id="social" title="Social Links">
+          <Toggle value={!!(c.show_social)} onChange={v => set('show_social', v)} label="Show Social Links" />
+          {((c.social_links as { platform: string; url: string }[]) || []).map((s, i) => (
+            <div key={i} className="flex gap-1 items-start">
+              <select
+                value={s.platform}
+                onChange={e => setArr('social_links', i, 'platform', e.target.value)}
+                className="w-28 bg-white/[0.04] border border-white/[0.08] rounded-lg px-2 py-2 text-xs text-white focus:outline-none focus:border-orange-500/40 shrink-0"
+              >
+                {['linkedin', 'twitter', 'instagram', 'facebook', 'youtube', 'github', 'tiktok'].map(p => (
+                  <option key={p} value={p} className="bg-[#0d1117] capitalize">{p.charAt(0).toUpperCase() + p.slice(1)}</option>
+                ))}
+              </select>
+              <Input value={s.url} onChange={v => setArr('social_links', i, 'url', v)} placeholder="https://..." />
+              <button onClick={() => removeFromArr('social_links', i)} className="w-8 h-9 flex items-center justify-center rounded-lg hover:bg-red-500/10 text-gray-600 hover:text-red-400 transition-colors shrink-0">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+          <button onClick={() => addToArr('social_links', { platform: 'linkedin', url: '' })} className="flex items-center gap-2 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+            <Plus className="w-3.5 h-3.5" /> Add Social Link
+          </button>
+        </Group>
+      </>
     );
 
     if (t === 'custom') return (

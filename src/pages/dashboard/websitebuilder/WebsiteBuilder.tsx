@@ -541,7 +541,13 @@ export default function WebsiteBuilder() {
             Preview Website
           </button>
           <button
-            onClick={() => saveProject({ ...project!, published: !project?.published })}
+            onClick={async () => {
+              await saveProject({ ...project!, published: !project?.published });
+              if (!project?.published) {
+                const previewId = project?.subdomain || project?.id;
+                if (previewId) window.open(`/website/preview/${previewId}`, '_blank');
+              }
+            }}
             className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${project?.published ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20' : 'gradient-orange text-white shadow-lg shadow-orange-500/20 hover:opacity-90'}`}
           >
             <Globe className="w-3.5 h-3.5" />
@@ -658,8 +664,8 @@ export default function WebsiteBuilder() {
 
                 <button
                   onClick={() => {
-                    const sub = project?.subdomain;
-                    window.open(sub ? `/website/preview/${sub}` : `/website/preview/preview-${project?.id?.slice(0, 8)}`, '_blank');
+                    const previewId = project?.subdomain || project?.id;
+                    if (previewId) window.open(`/website/preview/${previewId}`, '_blank');
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.08] text-gray-400 hover:text-white hover:border-white/[0.18] transition-all text-xs font-medium"
                 >
