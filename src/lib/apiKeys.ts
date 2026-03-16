@@ -13,13 +13,13 @@ const KEYS = {
 
 export type KeyName = keyof typeof KEYS;
 
-const CRYPTO_VERSION = 'v2:';
+const CRYPTO_VERSION = 'v3:';
 const KEY_MATERIAL_SALT = 'mfo-apikey-salt-2026';
 
 async function getDerivedKey(): Promise<CryptoKey> {
-  const sessionData = localStorage.getItem('sb-' + new URL(import.meta.env.VITE_SUPABASE_URL).hostname.split('.')[0] + '-auth-token');
+  const sessionData = localStorage.getItem('myfinance-os-auth');
   const userId = sessionData ? (JSON.parse(sessionData)?.user?.id ?? 'anon') : 'anon';
-  const rawSecret = `${userId}-${KEY_MATERIAL_SALT}-${navigator.userAgent.slice(0, 32)}`;
+  const rawSecret = `${userId}-${KEY_MATERIAL_SALT}`;
 
   const enc = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
@@ -60,12 +60,14 @@ async function encrypt(value: string): Promise<string> {
 }
 
 async function decrypt(stored: string): Promise<string> {
-  if (!stored.startsWith(CRYPTO_VERSION)) {
+  const versionPrefixes = ['v3:', 'v2:'];
+  const matchedPrefix = versionPrefixes.find(p => stored.startsWith(p));
+  if (!matchedPrefix) {
     try { return atob(stored); } catch { return stored; }
   }
   try {
     const key = await getDerivedKey();
-    const raw = Uint8Array.from(atob(stored.slice(CRYPTO_VERSION.length)), c => c.charCodeAt(0));
+    const raw = Uint8Array.from(atob(stored.slice(matchedPrefix.length)), c => c.charCodeAt(0));
     const iv = raw.slice(0, 12);
     const ciphertext = raw.slice(12);
     const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);

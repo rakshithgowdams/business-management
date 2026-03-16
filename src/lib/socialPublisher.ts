@@ -12,8 +12,9 @@ interface PublishResult {
 async function metaFetch(endpoint: string, options?: RequestInit): Promise<Response> {
   const token = await getApiKey('meta');
   if (!token) throw new Error('Meta access token not configured');
-  const separator = endpoint.includes('?') ? '&' : '?';
-  return fetch(`${META_BASE}${endpoint}${separator}access_token=${token}`, options);
+  const headers = new Headers(options?.headers);
+  headers.set('Authorization', `Bearer ${token}`);
+  return fetch(`${META_BASE}${endpoint}`, { ...options, headers });
 }
 
 export async function getInstagramAccountId(): Promise<string> {

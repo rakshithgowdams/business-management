@@ -366,6 +366,15 @@ export async function exportMeetingPrepPDF(data: ExportMeetingData) {
   doc.save(`meeting-brief-${clientName.toLowerCase().replace(/\s+/g, '-')}.pdf`);
 }
 
+function escHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function exportMeetingPrepWord(data: ExportMeetingData) {
   const { brief, clientName, meetingType, date } = data;
   const generated = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -375,7 +384,7 @@ export function exportMeetingPrepWord(data: ExportMeetingData) {
 
   const bulletItem = (item: string, color: string) =>
     `<div style="background:#F8FAFC;border:1px solid #E2E8F0;border-left:3px solid ${color};padding:6px 10px;margin-bottom:3px;">
-      <p style="margin:0;font-size:9pt;color:#475569;line-height:1.4;">${item}</p>
+      <p style="margin:0;font-size:9pt;color:#475569;line-height:1.4;">${escHtml(item)}</p>
     </div>`;
 
   const snapshotHtml = brief.CLIENT_SNAPSHOT.map(i => bulletItem(i, '#3B82F6')).join('');
@@ -390,7 +399,7 @@ export function exportMeetingPrepWord(data: ExportMeetingData) {
           <td style="width:22px;vertical-align:top;">
             <div style="background:#FF6B00;color:white;width:18px;height:18px;border-radius:9px;text-align:center;line-height:18px;font-size:8pt;font-weight:bold;">${i + 1}</div>
           </td>
-          <td style="padding-left:6px;font-size:9pt;color:#0F172A;line-height:1.4;">${point}</td>
+          <td style="padding-left:6px;font-size:9pt;color:#0F172A;line-height:1.4;">${escHtml(point)}</td>
         </tr></table>
       </div>`;
   });
@@ -400,9 +409,9 @@ export function exportMeetingPrepWord(data: ExportMeetingData) {
     objectionsHtml += `
       <div style="background:white;border:1px solid #E2E8F0;border-left:3px solid #F59E0B;padding:10px 12px;margin-bottom:6px;">
         <span style="background:#F59E0B;color:white;padding:1px 8px;border-radius:6px;font-size:7pt;font-weight:bold;">OBJECTION ${i + 1}</span>
-        <p style="margin:6px 0 4px 0;font-size:9pt;font-style:italic;color:#0F172A;line-height:1.4;">"${o.objection}"</p>
+        <p style="margin:6px 0 4px 0;font-size:9pt;font-style:italic;color:#0F172A;line-height:1.4;">"${escHtml(o.objection)}"</p>
         <p style="margin:0;font-size:7pt;font-weight:bold;color:#10B981;">HOW TO HANDLE:</p>
-        <p style="margin:3px 0 0 0;font-size:9pt;color:#475569;line-height:1.4;">${o.handling}</p>
+        <p style="margin:3px 0 0 0;font-size:9pt;color:#475569;line-height:1.4;">${escHtml(o.handling)}</p>
       </div>`;
   });
 
@@ -423,7 +432,7 @@ export function exportMeetingPrepWord(data: ExportMeetingData) {
           </td>
           <td style="padding-left:6px;">
             <p style="margin:0 0 2px 0;font-weight:bold;color:${card.color};font-size:9pt;">${card.label}</p>
-            <p style="margin:0;color:#334155;font-size:9pt;line-height:1.4;">${card.text}</p>
+            <p style="margin:0;color:#334155;font-size:9pt;line-height:1.4;">${escHtml(card.text)}</p>
           </td>
         </tr></table>
       </div>`;
@@ -446,13 +455,13 @@ export function exportMeetingPrepWord(data: ExportMeetingData) {
     <table style="width:100%;"><tr>
       <td style="vertical-align:top;">
         <h1 style="margin:0;color:white;font-size:18pt;">Meeting Prep Brief</h1>
-        <p style="margin:4px 0 0 0;color:#B4C8DC;font-size:11pt;">${clientName}</p>
-        <p style="margin:3px 0 0 0;color:#94A3B8;font-size:8pt;">${meetingType}${date ? `  |  ${date}` : ''}</p>
+        <p style="margin:4px 0 0 0;color:#B4C8DC;font-size:11pt;">${escHtml(clientName)}</p>
+        <p style="margin:3px 0 0 0;color:#94A3B8;font-size:8pt;">${escHtml(meetingType)}${date ? `  |  ${escHtml(date)}` : ''}</p>
         <p style="margin:3px 0 0 0;color:#64748B;font-size:7pt;">Generated: ${generated}</p>
       </td>
       <td style="text-align:right;vertical-align:top;width:120px;">
         <div style="background:#FF6B00;color:white;padding:5px 12px;border-radius:6px;display:inline-block;text-align:center;font-size:8pt;font-weight:bold;">
-          ${meetingType}
+          ${escHtml(meetingType)}
         </div>
       </td>
     </tr></table>
@@ -461,7 +470,7 @@ export function exportMeetingPrepWord(data: ExportMeetingData) {
 
   <div style="background:#FFF7ED;border:1px solid #FFEDD5;border-left:3px solid #FF6B00;padding:10px 14px;margin:12px 0;">
     <p style="margin:0 0 2px 0;font-size:7pt;font-weight:bold;color:#FF6B00;">OPENING LINE</p>
-    <p style="margin:0;font-size:9pt;font-style:italic;color:#0F172A;line-height:1.4;">"${brief.OPENING_LINE}"</p>
+    <p style="margin:0;font-size:9pt;font-style:italic;color:#0F172A;line-height:1.4;">"${escHtml(brief.OPENING_LINE)}"</p>
   </div>
 
   ${sectionHeading('Client Snapshot')}
@@ -471,13 +480,13 @@ export function exportMeetingPrepWord(data: ExportMeetingData) {
     <td style="width:49%;vertical-align:top;padding-right:4px;">
       <div style="background:white;border:1px solid #E2E8F0;border-top:2px solid #10B981;padding:8px 10px;">
         <p style="margin:0 0 3px 0;font-size:7pt;font-weight:bold;color:#10B981;text-transform:uppercase;">Relationship Status</p>
-        <p style="margin:0;font-size:8pt;color:#475569;line-height:1.4;">${brief.RELATIONSHIP_STATUS}</p>
+        <p style="margin:0;font-size:8pt;color:#475569;line-height:1.4;">${escHtml(brief.RELATIONSHIP_STATUS)}</p>
       </div>
     </td>
     <td style="width:49%;vertical-align:top;padding-left:4px;">
       <div style="background:white;border:1px solid #E2E8F0;border-top:2px solid #3B82F6;padding:8px 10px;">
         <p style="margin:0 0 3px 0;font-size:7pt;font-weight:bold;color:#3B82F6;text-transform:uppercase;">Last Discussed</p>
-        <p style="margin:0;font-size:8pt;color:#475569;line-height:1.4;">${brief.LAST_DISCUSSED}</p>
+        <p style="margin:0;font-size:8pt;color:#475569;line-height:1.4;">${escHtml(brief.LAST_DISCUSSED)}</p>
       </div>
     </td>
   </tr></table>

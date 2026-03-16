@@ -381,8 +381,8 @@ export default function Landing() {
 
       <section className="relative pt-32 pb-24 px-4 overflow-hidden">
         <GradientOrb className="w-[600px] h-[600px] top-[-200px] left-[-200px] bg-orange-600/10" />
-        <GradientOrb className="w-[400px] h-[400px] top-[100px] right-[-100px] bg-sky-600/8" />
-        <GradientOrb className="w-[300px] h-[300px] bottom-0 left-1/2 -translate-x-1/2 bg-emerald-600/6" />
+        <GradientOrb className="w-[400px] h-[400px] top-[100px] right-[-100px] bg-sky-600/[0.08]" />
+        <GradientOrb className="w-[300px] h-[300px] bottom-0 left-1/2 -translate-x-1/2 bg-emerald-600/[0.06]" />
 
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.05] border border-orange-500/20 text-orange-400 text-sm font-medium mb-8 backdrop-blur-sm">
@@ -476,7 +476,7 @@ export default function Landing() {
       </section>
 
       <section id="features" className="py-24 px-4 relative">
-        <GradientOrb className="w-[500px] h-[500px] top-0 right-0 bg-sky-600/6" />
+        <GradientOrb className="w-[500px] h-[500px] top-0 right-0 bg-sky-600/5" />
         <div className="max-w-7xl mx-auto">
           <AnimSection>
             <div className="text-center mb-16">
@@ -529,7 +529,7 @@ export default function Landing() {
       </section>
 
       <section id="ai" className="py-24 px-4 relative bg-gradient-to-b from-transparent via-[#0b0e16] to-transparent">
-        <GradientOrb className="w-[600px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-600/6" />
+        <GradientOrb className="w-[600px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-600/5" />
         <div className="max-w-7xl mx-auto">
           <AnimSection>
             <div className="text-center mb-16">
@@ -571,7 +571,7 @@ export default function Landing() {
       </section>
 
       <section id="marketing" className="py-24 px-4 relative">
-        <GradientOrb className="w-[500px] h-[500px] bottom-0 left-0 bg-violet-600/6" />
+        <GradientOrb className="w-[500px] h-[500px] bottom-0 left-0 bg-violet-600/5" />
         <div className="max-w-7xl mx-auto">
           <AnimSection>
             <div className="text-center mb-16">
@@ -879,7 +879,7 @@ export default function Landing() {
       </section>
 
       <section className="py-24 px-4 relative overflow-hidden">
-        <GradientOrb className="w-[600px] h-[400px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-600/8" />
+        <GradientOrb className="w-[600px] h-[400px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-600/[0.08]" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <AnimSection>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-sm font-medium mb-8">
@@ -914,8 +914,8 @@ export default function Landing() {
           BUY THIS SYSTEM SECTION
       ============================================================ */}
       <section className="py-24 px-4 relative overflow-hidden bg-gradient-to-b from-[#0b0e16] to-[#080a0f]">
-        <GradientOrb className="w-[700px] h-[500px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-amber-500/8" />
-        <GradientOrb className="w-[300px] h-[300px] top-0 right-0 bg-orange-600/6" />
+        <GradientOrb className="w-[700px] h-[500px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-amber-500/[0.08]" />
+        <GradientOrb className="w-[300px] h-[300px] top-0 right-0 bg-orange-600/5" />
         <GradientOrb className="w-[250px] h-[250px] bottom-0 left-0 bg-sky-600/5" />
 
         <div className="max-w-5xl mx-auto relative z-10">

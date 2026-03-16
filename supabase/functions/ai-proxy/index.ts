@@ -7,12 +7,25 @@ const SECURITY_HEADERS = {
   "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
 };
 
-function getCorsHeaders(_req: Request) {
+const ALLOWED_ORIGINS = [
+  "https://mydesignnexus.com",
+  "https://www.mydesignnexus.com",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:3000",
+];
+
+const MAX_BODY_SIZE = 512 * 1024;
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get("Origin") || "";
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey, X-Team-Token",
     "Access-Control-Max-Age": "86400",
+    "Vary": "Origin",
     ...SECURITY_HEADERS,
   };
 }
@@ -42,6 +55,14 @@ Deno.serve(async (req: Request) => {
 
   if (req.method !== "POST" && req.method !== "GET") {
     return new Response(null, { status: 405, headers: getCorsHeaders(req) });
+  }
+
+  const contentLength = parseInt(req.headers.get("Content-Length") || "0", 10);
+  if (contentLength > MAX_BODY_SIZE) {
+    return new Response(JSON.stringify({ error: "Request body too large" }), {
+      status: 413,
+      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+    });
   }
 
   try {
@@ -228,9 +249,6 @@ async function handleTeamMemberRequest(
   let apiKey: string | null = clientApiKey || null;
   if (!apiKey) {
     apiKey = await getDecryptedKey(member.owner_id, supabaseUrl, serviceKey);
-  }
-  if (!apiKey) {
-    apiKey = await getAnyDecryptedKey(supabaseUrl, serviceKey);
   }
   if (!apiKey) {
     apiKey = Deno.env.get("OPENROUTER_API_KEY") || null;
@@ -579,16 +597,9 @@ async function handleAICall(
   }
 
   let apiKey: string | null = clientApiKey || null;
-  let keyFromClient = false;
 
   if (!apiKey) {
     apiKey = await getDecryptedKey(userId, supabaseUrl, serviceKey);
-  } else {
-    keyFromClient = true;
-  }
-
-  if (!apiKey) {
-    apiKey = await getAnyDecryptedKey(supabaseUrl, serviceKey);
   }
 
   if (!apiKey) {
@@ -600,15 +611,6 @@ async function handleAICall(
       data: null,
       error: "No OpenRouter API key found. Please add your key in Settings.",
       tokens_used: 0,
-    });
-  }
-
-  if (keyFromClient) {
-    const ac = createClient(supabaseUrl, serviceKey);
-    await ac.rpc("save_user_api_key", {
-      p_user_id: userId,
-      p_raw_key: apiKey,
-      p_provider: "openrouter",
     });
   }
 
@@ -706,30 +708,6 @@ async function getDecryptedKey(
     .select("encrypted_key")
     .eq("user_id", userId)
     .eq("provider", "openrouter")
-    .maybeSingle();
-
-  if (error || !data) return null;
-
-  const { data: decrypted, error: decErr } = await adminClient.rpc(
-    "decrypt_api_key",
-    { encrypted_key_value: data.encrypted_key }
-  );
-
-  if (decErr || !decrypted) return null;
-  return decrypted as string;
-}
-
-async function getAnyDecryptedKey(
-  supabaseUrl: string,
-  serviceKey: string,
-): Promise<string | null> {
-  const adminClient = createClient(supabaseUrl, serviceKey);
-  const { data, error } = await adminClient
-    .from("user_api_keys")
-    .select("encrypted_key")
-    .eq("provider", "openrouter")
-    .order("updated_at", { ascending: false })
-    .limit(1)
     .maybeSingle();
 
   if (error || !data) return null;

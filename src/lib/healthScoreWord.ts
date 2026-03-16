@@ -1,5 +1,14 @@
 import type { HealthScoreExportData } from './healthScorePdf';
 
+function esc(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function getScoreLabel(score: number) {
   if (score >= 91) return { label: 'Excellent', color: '#3B82F6' };
   if (score >= 76) return { label: 'Healthy', color: '#10B981' };
@@ -114,10 +123,10 @@ export function exportHealthScoreWord(data: HealthScoreExportData) {
     const sc = statusStyle(m.status);
     metricsHtml += `
       <tr>
-        <td style="padding:10px 12px;border-left:3px solid ${sc.text};font-weight:bold;color:#0F172A;font-size:10pt;">${m.name}</td>
-        <td style="padding:10px 12px;color:#475569;font-size:9pt;">${m.value}</td>
+        <td style="padding:10px 12px;border-left:3px solid ${sc.text};font-weight:bold;color:#0F172A;font-size:10pt;">${esc(m.name)}</td>
+        <td style="padding:10px 12px;color:#475569;font-size:9pt;">${esc(m.value)}</td>
         <td style="padding:10px 12px;text-align:center;">
-          <span style="background:${sc.bg};color:${sc.text};padding:3px 10px;border-radius:12px;font-size:8pt;font-weight:bold;">${m.status}</span>
+          <span style="background:${sc.bg};color:${sc.text};padding:3px 10px;border-radius:12px;font-size:8pt;font-weight:bold;">${esc(m.status)}</span>
         </td>
         <td style="padding:10px 12px;text-align:center;font-weight:bold;color:#FF6B00;font-size:11pt;">${m.scoreEarned}/${m.scoreMax}</td>
         <td style="padding:10px 12px;text-align:center;">
@@ -143,7 +152,7 @@ export function exportHealthScoreWord(data: HealthScoreExportData) {
               </td>
               <td style="padding-left:8px;">
                 <p style="margin:0 0 3px 0;font-weight:bold;color:${cfg.color};font-size:10pt;">${cfg.label}</p>
-                <p style="margin:0;color:#334155;font-size:9pt;line-height:1.5;">${aiInsights[key]}</p>
+                <p style="margin:0;color:#334155;font-size:9pt;line-height:1.5;">${esc(aiInsights[key])}</p>
               </td>
             </tr>
           </table>
@@ -194,11 +203,11 @@ export function exportHealthScoreWord(data: HealthScoreExportData) {
         <tr style="background:${bg};">
           <td style="padding:8px 10px;text-align:center;color:#64748B;font-size:9pt;font-weight:bold;">${i + 1}</td>
           <td style="padding:8px 10px;">${statusBadge}</td>
-          <td style="padding:8px 10px;color:${isDone ? '#94A3B8' : '#0F172A'};font-size:9pt;${isDone ? 'text-decoration:line-through;' : 'font-weight:bold;'}">${item.action}</td>
+          <td style="padding:8px 10px;color:${isDone ? '#94A3B8' : '#0F172A'};font-size:9pt;${isDone ? 'text-decoration:line-through;' : 'font-weight:bold;'}">${esc(item.action)}</td>
           <td style="padding:8px 10px;text-align:center;">
-            <span style="background:${imp.bg};color:${imp.text};padding:2px 8px;border-radius:10px;font-size:8pt;font-weight:bold;">${item.impact}</span>
+            <span style="background:${imp.bg};color:${imp.text};padding:2px 8px;border-radius:10px;font-size:8pt;font-weight:bold;">${esc(item.impact)}</span>
           </td>
-          <td style="padding:8px 10px;color:#64748B;font-size:8pt;">${item.metric}</td>
+          <td style="padding:8px 10px;color:#64748B;font-size:8pt;">${esc(item.metric)}</td>
         </tr>`;
     });
     actionsHtml = `

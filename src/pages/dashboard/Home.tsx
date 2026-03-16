@@ -520,11 +520,17 @@ export default function Home() {
       setLoaded(p => ({ ...p, followups: true }));
     }).catch(() => setLoaded(p => ({ ...p, followups: true })));
 
-    loadingRef.current = false;
-    setRefreshing(false);
   }, [user]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  useEffect(() => {
+    const allLoaded = Object.values(loaded).every(Boolean);
+    if (allLoaded && loadingRef.current) {
+      loadingRef.current = false;
+      setRefreshing(false);
+    }
+  }, [loaded]);
 
   const handleDragStart = (idx: number) => setDragIdx(idx);
   const handleDragOver = (e: React.DragEvent, idx: number) => {

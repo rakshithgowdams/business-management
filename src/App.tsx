@@ -1,63 +1,76 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Landing from './pages/Landing';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import TeamLogin from './pages/TeamLogin';
-import DashboardLayout from './components/DashboardLayout';
-import TeamDashboardLayout from './components/TeamDashboardLayout';
+import { TeamAuthProvider } from './context/TeamAuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import TeamProtectedRoute from './components/TeamProtectedRoute';
 import PermissionGate from './components/PermissionGate';
-import { TeamAuthProvider } from './context/TeamAuthContext';
-import Home from './pages/dashboard/Home';
-import Expenses from './pages/dashboard/Expenses';
-import Income from './pages/dashboard/Income';
-import Goals from './pages/dashboard/Goals';
-import Invoices from './pages/dashboard/invoices/InvoiceList';
-import Quotations from './pages/dashboard/quotations/QuotationList';
-import AgreementBuilder from './pages/dashboard/agreementbuilder/AgreementBuilder';
-import EMITracker from './pages/dashboard/EMITracker';
-import Subscriptions from './pages/dashboard/Subscriptions';
-import GSTTracker from './pages/dashboard/GSTTracker';
-import Settings from './pages/dashboard/Settings';
-import UserProfile from './pages/dashboard/UserProfile';
-import ProjectsList from './pages/dashboard/projects/ProjectsList';
-import ProjectForm from './pages/dashboard/projects/ProjectForm';
-import ProjectDetail from './pages/dashboard/projects/ProjectDetail';
-import ClientsList from './pages/dashboard/clients/ClientsList';
-import ClientForm from './pages/dashboard/clients/ClientForm';
-import ClientDetail from './pages/dashboard/clients/ClientDetail';
-import EmployeesList from './pages/dashboard/employees/EmployeesList';
-import EmployeeForm from './pages/dashboard/employees/EmployeeForm';
-import EmployeeDetail from './pages/dashboard/employees/EmployeeDetail';
-import PayrollOverview from './pages/dashboard/employees/PayrollOverview';
-import OnboardingList from './pages/dashboard/onboarding/OnboardingList';
-import OnboardingForm from './pages/dashboard/onboarding/OnboardingForm';
-import OnboardingDetail from './pages/dashboard/onboarding/OnboardingDetail';
-import WorkTracker from './pages/dashboard/worktracker/WorkTracker';
-import TaskDetail from './pages/dashboard/worktracker/TaskDetail';
-import Timesheet from './pages/dashboard/worktracker/Timesheet';
-import AIIntelligence from './pages/dashboard/ai/AIIntelligence';
-import AIHistory from './pages/dashboard/ai/AIHistory';
-import HealthScore from './pages/dashboard/healthscore/HealthScore';
-import MeetingPrep from './pages/dashboard/meetingprep/MeetingPrep';
-import WeeklySummary from './pages/dashboard/weeklysummary/WeeklySummary';
-import FollowUps from './pages/dashboard/followups/FollowUps';
-import DocumentVault from './pages/dashboard/documents/DocumentVault';
-import MarketingStudio from './pages/dashboard/marketing/MarketingStudio';
-import SMMAgent from './pages/dashboard/smm/SMMAgent';
-import AIUsage from './pages/dashboard/AIUsage';
-import TaskManagement from './pages/dashboard/taskmanagement/TaskManagement';
-import Messenger from './pages/dashboard/messenger/Messenger';
-import TeamsList from './pages/dashboard/teams/TeamsList';
-import HRDashboard from './pages/dashboard/hr/HRDashboard';
-import DigitalMarketingHub from './pages/dashboard/digitalmarketing/DigitalMarketingHub';
-import PipelineHub from './pages/dashboard/pipeline/PipelineHub';
-import WebsiteBuilder from './pages/dashboard/websitebuilder/WebsiteBuilder';
-import WebsiteLeads from './pages/dashboard/websitebuilder/WebsiteLeads';
-import WebsitePublicPreview from './pages/WebsitePublicPreview';
 import PWAInstallBanner from './components/PWAInstallBanner';
 import OfflineIndicator from './components/OfflineIndicator';
+import NotFound from './components/NotFound';
+
+const Landing = lazy(() => import('./pages/Landing'));
+const Login = lazy(() => import('./pages/Login'));
+const Signup = lazy(() => import('./pages/Signup'));
+const TeamLogin = lazy(() => import('./pages/TeamLogin'));
+const WebsitePublicPreview = lazy(() => import('./pages/WebsitePublicPreview'));
+
+const DashboardLayout = lazy(() => import('./components/DashboardLayout'));
+const TeamDashboardLayout = lazy(() => import('./components/TeamDashboardLayout'));
+
+const Home = lazy(() => import('./pages/dashboard/Home'));
+const Expenses = lazy(() => import('./pages/dashboard/Expenses'));
+const Income = lazy(() => import('./pages/dashboard/Income'));
+const Goals = lazy(() => import('./pages/dashboard/Goals'));
+const Invoices = lazy(() => import('./pages/dashboard/invoices/InvoiceList'));
+const Quotations = lazy(() => import('./pages/dashboard/quotations/QuotationList'));
+const AgreementBuilder = lazy(() => import('./pages/dashboard/agreementbuilder/AgreementBuilder'));
+const EMITracker = lazy(() => import('./pages/dashboard/EMITracker'));
+const Subscriptions = lazy(() => import('./pages/dashboard/Subscriptions'));
+const GSTTracker = lazy(() => import('./pages/dashboard/GSTTracker'));
+const Settings = lazy(() => import('./pages/dashboard/Settings'));
+const UserProfile = lazy(() => import('./pages/dashboard/UserProfile'));
+const ProjectsList = lazy(() => import('./pages/dashboard/projects/ProjectsList'));
+const ProjectForm = lazy(() => import('./pages/dashboard/projects/ProjectForm'));
+const ProjectDetail = lazy(() => import('./pages/dashboard/projects/ProjectDetail'));
+const ClientsList = lazy(() => import('./pages/dashboard/clients/ClientsList'));
+const ClientForm = lazy(() => import('./pages/dashboard/clients/ClientForm'));
+const ClientDetail = lazy(() => import('./pages/dashboard/clients/ClientDetail'));
+const EmployeesList = lazy(() => import('./pages/dashboard/employees/EmployeesList'));
+const EmployeeForm = lazy(() => import('./pages/dashboard/employees/EmployeeForm'));
+const EmployeeDetail = lazy(() => import('./pages/dashboard/employees/EmployeeDetail'));
+const PayrollOverview = lazy(() => import('./pages/dashboard/employees/PayrollOverview'));
+const OnboardingList = lazy(() => import('./pages/dashboard/onboarding/OnboardingList'));
+const OnboardingForm = lazy(() => import('./pages/dashboard/onboarding/OnboardingForm'));
+const OnboardingDetail = lazy(() => import('./pages/dashboard/onboarding/OnboardingDetail'));
+const WorkTracker = lazy(() => import('./pages/dashboard/worktracker/WorkTracker'));
+const TaskDetail = lazy(() => import('./pages/dashboard/worktracker/TaskDetail'));
+const Timesheet = lazy(() => import('./pages/dashboard/worktracker/Timesheet'));
+const AIIntelligence = lazy(() => import('./pages/dashboard/ai/AIIntelligence'));
+const AIHistory = lazy(() => import('./pages/dashboard/ai/AIHistory'));
+const HealthScore = lazy(() => import('./pages/dashboard/healthscore/HealthScore'));
+const MeetingPrep = lazy(() => import('./pages/dashboard/meetingprep/MeetingPrep'));
+const WeeklySummary = lazy(() => import('./pages/dashboard/weeklysummary/WeeklySummary'));
+const FollowUps = lazy(() => import('./pages/dashboard/followups/FollowUps'));
+const DocumentVault = lazy(() => import('./pages/dashboard/documents/DocumentVault'));
+const MarketingStudio = lazy(() => import('./pages/dashboard/marketing/MarketingStudio'));
+const SMMAgent = lazy(() => import('./pages/dashboard/smm/SMMAgent'));
+const AIUsage = lazy(() => import('./pages/dashboard/AIUsage'));
+const TaskManagement = lazy(() => import('./pages/dashboard/taskmanagement/TaskManagement'));
+const Messenger = lazy(() => import('./pages/dashboard/messenger/Messenger'));
+const TeamsList = lazy(() => import('./pages/dashboard/teams/TeamsList'));
+const HRDashboard = lazy(() => import('./pages/dashboard/hr/HRDashboard'));
+const DigitalMarketingHub = lazy(() => import('./pages/dashboard/digitalmarketing/DigitalMarketingHub'));
+const PipelineHub = lazy(() => import('./pages/dashboard/pipeline/PipelineHub'));
+const WebsiteBuilder = lazy(() => import('./pages/dashboard/websitebuilder/WebsiteBuilder'));
+const WebsiteLeads = lazy(() => import('./pages/dashboard/websitebuilder/WebsiteLeads'));
+
+function PageLoader() {
+  return (
+    <div className="min-h-screen bg-dark-900 flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
 
 function EmployeeLogin() {
   return (
@@ -129,9 +142,9 @@ function teamRoutes(basePath: string) {
       <Route path="ai-intelligence/history" element={<PG perm="ai_intelligence" basePath={basePath}><AIHistory /></PG>} />
       <Route path="employees" element={<PG perm="employees" basePath={basePath}><EmployeesList /></PG>} />
       <Route path="employees/new" element={<PG perm="employees" basePath={basePath}><EmployeeForm /></PG>} />
+      <Route path="employees/payroll" element={<PG perm="employees" basePath={basePath}><PayrollOverview /></PG>} />
       <Route path="employees/:id" element={<PG perm="employees" basePath={basePath}><EmployeeDetail /></PG>} />
       <Route path="employees/:id/edit" element={<PG perm="employees" basePath={basePath}><EmployeeForm /></PG>} />
-      <Route path="employees/payroll" element={<PG perm="employees" basePath={basePath}><PayrollOverview /></PG>} />
       <Route path="onboarding" element={<PG perm="onboarding" basePath={basePath}><OnboardingList /></PG>} />
       <Route path="onboarding/new" element={<PG perm="onboarding" basePath={basePath}><OnboardingForm /></PG>} />
       <Route path="onboarding/:id" element={<PG perm="onboarding" basePath={basePath}><OnboardingDetail /></PG>} />
@@ -150,6 +163,7 @@ function teamRoutes(basePath: string) {
       <Route path="messenger" element={<PG perm="messenger" basePath={basePath}><Messenger /></PG>} />
       <Route path="website-builder" element={<PG perm="projects" basePath={basePath}><WebsiteBuilder /></PG>} />
       <Route path="website-leads" element={<PG perm="projects" basePath={basePath}><WebsiteLeads /></PG>} />
+      <Route path="*" element={<NotFound />} />
     </>
   );
 }
@@ -159,6 +173,7 @@ export default function App() {
     <>
     <PWAInstallBanner />
     <OfflineIndicator />
+    <Suspense fallback={<PageLoader />}>
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
@@ -201,9 +216,9 @@ export default function App() {
         <Route path="ai-intelligence/history" element={<AIHistory />} />
         <Route path="employees" element={<EmployeesList />} />
         <Route path="employees/new" element={<EmployeeForm />} />
+        <Route path="employees/payroll" element={<PayrollOverview />} />
         <Route path="employees/:id" element={<EmployeeDetail />} />
         <Route path="employees/:id/edit" element={<EmployeeForm />} />
-        <Route path="employees/payroll" element={<PayrollOverview />} />
         <Route path="onboarding" element={<OnboardingList />} />
         <Route path="onboarding/new" element={<OnboardingForm />} />
         <Route path="onboarding/:id" element={<OnboardingDetail />} />
@@ -224,6 +239,7 @@ export default function App() {
         <Route path="website-leads" element={<WebsiteLeads />} />
         <Route path="settings" element={<Settings />} />
         <Route path="profile" element={<UserProfile />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
 
       <Route path="/employee/dashboard" element={<EmployeeDashboard />}>
@@ -235,7 +251,9 @@ export default function App() {
       </Route>
 
       <Route path="/website/preview/:subdomain" element={<WebsitePublicPreview />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
+    </Suspense>
     </>
   );
 }

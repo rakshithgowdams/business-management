@@ -337,6 +337,15 @@ export async function exportWeeklySummaryPDF(data: WeeklySummaryExportData) {
   doc.save(`weekly-summary-${weekLabel.replace(/\s+/g, '-').replace(/[^\w-]/g, '')}.pdf`);
 }
 
+function escHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function exportWeeklySummaryWord(data: WeeklySummaryExportData) {
   const { metrics: m, insight, weekLabel } = data;
   const generated = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -361,7 +370,7 @@ export function exportWeeklySummaryWord(data: WeeklySummaryExportData) {
   const highlightCard = (label: string, text: string, color: string, bg: string) =>
     `<div style="background:${bg};border-left:3px solid ${color};padding:8px 12px;margin-bottom:5px;">
       <p style="margin:0 0 2px 0;font-size:7pt;font-weight:bold;color:${color};">${label.toUpperCase()}</p>
-      <p style="margin:0;font-size:9pt;color:#334155;line-height:1.4;">${text}</p>
+      <p style="margin:0;font-size:9pt;color:#334155;line-height:1.4;">${escHtml(text)}</p>
     </div>`;
 
   let prioritiesHtml = '';
@@ -372,7 +381,7 @@ export function exportWeeklySummaryWord(data: WeeklySummaryExportData) {
           <td style="width:20px;vertical-align:top;">
             <div style="background:#FF6B00;color:white;width:16px;height:16px;border-radius:8px;text-align:center;line-height:16px;font-size:7pt;font-weight:bold;">${i + 1}</div>
           </td>
-          <td style="padding-left:5px;font-size:9pt;color:#0F172A;line-height:1.4;">${p}</td>
+          <td style="padding-left:5px;font-size:9pt;color:#0F172A;line-height:1.4;">${escHtml(p)}</td>
         </tr></table>
       </div>`;
   });
@@ -385,7 +394,7 @@ export function exportWeeklySummaryWord(data: WeeklySummaryExportData) {
       teamHtml += `
         <div style="background:#F8FAFC;border:1px solid #E2E8F0;padding:6px 10px;margin-bottom:2px;">
           <table style="width:100%;"><tr>
-            <td style="font-size:9pt;color:#0F172A;">${name}</td>
+            <td style="font-size:9pt;color:#0F172A;">${escHtml(name)}</td>
             <td style="text-align:right;font-size:10pt;font-weight:bold;color:#FF6B00;">${hours.toFixed(0)}h</td>
           </tr></table>
         </div>`;
@@ -463,7 +472,7 @@ export function exportWeeklySummaryWord(data: WeeklySummaryExportData) {
 
   ${sectionHeading('AI Weekly Intelligence')}
   <div style="background:#FFF7ED;border:1px solid #FFEDD5;border-left:3px solid #FF6B00;padding:10px 14px;margin-bottom:8px;">
-    <p style="margin:0;font-size:9pt;color:#0F172A;line-height:1.4;">${insight.WEEK_SUMMARY}</p>
+    <p style="margin:0;font-size:9pt;color:#0F172A;line-height:1.4;">${escHtml(insight.WEEK_SUMMARY)}</p>
   </div>
 
   ${highlightCard('Best Thing This Week', insight.BEST_THING, '#10B981', '#ECFDF5')}
