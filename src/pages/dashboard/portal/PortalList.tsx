@@ -185,8 +185,8 @@ export default function PortalList() {
                     )}
                   </div>
 
-                  <div className="mt-3 flex items-center gap-2">
-                    <div className="flex-1 min-w-0">
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2">
+                    <div className="min-w-0">
                       <div className="flex items-center gap-2 bg-dark-700 rounded-lg px-3 py-2">
                         <span className="text-xs text-gray-500 shrink-0">URL:</span>
                         <span className="text-xs text-gray-300 truncate">{portalUrl(portal.portal_slug)}</span>
@@ -198,33 +198,35 @@ export default function PortalList() {
                         </button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 bg-dark-700 rounded-lg px-3 py-2">
-                      <span className="text-xs text-gray-500 shrink-0">Code:</span>
-                      <span className="text-xs text-gray-300 font-mono">
-                        {revealedCodes.has(portal.id) ? portal.access_code : '••••••••••••'}
-                      </span>
-                      <button
-                        onClick={() => setRevealedCodes(prev => {
-                          const next = new Set(prev);
-                          if (next.has(portal.id)) next.delete(portal.id);
-                          else next.add(portal.id);
-                          return next;
-                        })}
-                        className="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white shrink-0 transition-colors"
-                      >
-                        {revealedCodes.has(portal.id) ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                      </button>
-                      <button
-                        onClick={() => copyToClipboard(portal.access_code, `code-${portal.id}`)}
-                        className="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white shrink-0 transition-colors"
-                      >
-                        <Copy className="w-3.5 h-3.5" />
-                      </button>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 bg-dark-700 rounded-lg px-3 py-2">
+                        <span className="text-xs text-gray-500 shrink-0">Code:</span>
+                        <span className="text-xs text-gray-300 font-mono truncate">
+                          {revealedCodes.has(portal.id) ? portal.access_code : '••••••••••••'}
+                        </span>
+                        <button
+                          onClick={() => setRevealedCodes(prev => {
+                            const next = new Set(prev);
+                            if (next.has(portal.id)) next.delete(portal.id);
+                            else next.add(portal.id);
+                            return next;
+                          })}
+                          className="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white shrink-0 transition-colors"
+                        >
+                          {revealedCodes.has(portal.id) ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                        <button
+                          onClick={() => copyToClipboard(portal.access_code, `code-${portal.id}`)}
+                          className="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white shrink-0 transition-colors"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
                   <button
                     onClick={() => handleRegenerate(portal.id)}
                     disabled={regeneratingId === portal.id}
