@@ -1,10 +1,9 @@
 import type React from 'react';
-import { useRef, useState } from 'react';
-import { Printer, Download, Loader2, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { useState } from 'react';
+import { Printer, Download, Loader2, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { AgreementDraft } from '../../../lib/agreementBuilder/types';
+import { generateAgreementPdf } from '../../../lib/agreementPdf';
 
 interface Props {
   draft: AgreementDraft;
@@ -544,7 +543,6 @@ function AgreementDocument({ draft }: AgreementDocProps) {
 }
 
 export default function AgreementPreview({ draft }: Props) {
-  const docRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [printing, setPrinting] = useState(false);
 
@@ -553,49 +551,10 @@ export default function AgreementPreview({ draft }: Props) {
   const filename = `${(draft.agreementTitle || 'Agreement').replace(/\s+/g, '_')}_${draft.agreementNumber || 'Draft'}.pdf`;
 
   const handleDownloadPDF = async () => {
-    if (!docRef.current) return;
     setDownloading(true);
     const toastId = toast.loading('Generating PDF...', { duration: 0 });
     try {
-      const el = docRef.current;
-
-      const canvas = await html2canvas(el, {
-        scale: 2,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        windowWidth: A4_WIDTH_PX,
-      });
-
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const pageW = pdf.internal.pageSize.getWidth();
-      const pageH = pdf.internal.pageSize.getHeight();
-
-      const imgW = pageW;
-      const imgTotalH = (canvas.height * pageW) / canvas.width;
-      let renderedH = 0;
-
-      while (renderedH < imgTotalH) {
-        const sliceH = Math.min(pageH, imgTotalH - renderedH);
-        const srcY = (renderedH / imgTotalH) * canvas.height;
-        const srcH = (sliceH / imgTotalH) * canvas.height;
-
-        const pageCanvas = document.createElement('canvas');
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = srcH;
-        const ctx = pageCanvas.getContext('2d');
-        if (ctx) {
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-          ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
-        }
-
-        if (renderedH > 0) pdf.addPage();
-        pdf.addImage(pageCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, imgW, sliceH);
-        renderedH += sliceH;
-      }
-
+      const pdf = generateAgreementPdf(draft);
       pdf.save(filename);
       toast.success('PDF downloaded!', { id: toastId });
     } catch (err) {
@@ -608,10 +567,21 @@ export default function AgreementPreview({ draft }: Props) {
 
   const handlePrint = () => {
     setPrinting(true);
-    setTimeout(() => {
-      window.print();
+    try {
+      const pdf = generateAgreementPdf(draft);
+      const blobUrl = pdf.output('bloburl');
+      const printWin = window.open(blobUrl as unknown as string, '_blank');
+      if (printWin) {
+        printWin.addEventListener('load', () => {
+          printWin.print();
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to prepare print.');
+    } finally {
       setPrinting(false);
-    }, 200);
+    }
   };
 
   return (
@@ -672,39 +642,12 @@ export default function AgreementPreview({ draft }: Props) {
                 minHeight: A4_HEIGHT_PX,
               }}
             >
-              <div ref={docRef}>
-                <AgreementDocument draft={draft} />
-              </div>
+              <AgreementDocument draft={draft} />
             </div>
           </div>
         </div>
       </div>
 
-      <div
-        id="agreement-pdf"
-        className="hidden print:block"
-        ref={undefined}
-        style={{
-          printColorAdjust: 'exact',
-          WebkitPrintColorAdjust: 'exact',
-        } as React.CSSProperties}
-      >
-        <AgreementDocument draft={draft} />
-      </div>
-    </div>
-  );
-}
-
-function _PageIndicator({ current, total, onPrev, onNext }: { current: number; total: number; onPrev: () => void; onNext: () => void }) {
-  return (
-    <div className="flex items-center gap-3 bg-dark-900/80 rounded-xl px-4 py-2 border border-white/[0.06]">
-      <button onClick={onPrev} disabled={current <= 1} className="text-gray-400 hover:text-white disabled:opacity-30 transition-colors">
-        <ChevronLeft className="w-4 h-4" />
-      </button>
-      <span className="text-xs text-gray-400 font-mono">Page {current} / {total}</span>
-      <button onClick={onNext} disabled={current >= total} className="text-gray-400 hover:text-white disabled:opacity-30 transition-colors">
-        <ChevronRight className="w-4 h-4" />
-      </button>
     </div>
   );
 }
