@@ -50,7 +50,7 @@ async function hashCode(code: string): Promise<string> {
     keyMaterial,
     256
   );
-  return `pbkdf2:${toHex(salt.buffer)}:${toHex(derived)}`;
+  return `pbkdf2:${toHex(salt.buffer.slice(salt.byteOffset, salt.byteOffset + salt.byteLength))}:${toHex(derived)}`;
 }
 
 async function verifyCode(
@@ -131,9 +131,6 @@ Deno.serve(async (req: Request) => {
     }
     if (action === "get-portal-data") {
       return await handleGetPortalData(body, req, admin);
-    }
-    if (action === "log-activity") {
-      return await handleLogActivity(body, req, admin);
     }
     if (action === "create-portal") {
       return await handleCreatePortal(body, req, admin);
