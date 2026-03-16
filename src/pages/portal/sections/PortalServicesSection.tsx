@@ -13,6 +13,26 @@ function hexToRgb(hex: string): string {
   return `${parseInt(h.substring(0, 2), 16)},${parseInt(h.substring(2, 4), 16)},${parseInt(h.substring(4, 6), 16)}`;
 }
 
+function formatPriceWithRupee(raw: string): string {
+  const cleaned = raw.replace(/[^\d.\-–,to ]/gi, '').trim();
+  const numbers = raw.match(/[\d,]+(?:\.\d+)?/g);
+  if (!numbers || numbers.length === 0) return raw;
+
+  let result = raw;
+  for (const numStr of numbers) {
+    const num = parseFloat(numStr.replace(/,/g, ''));
+    if (isNaN(num)) continue;
+    const formatted = num.toLocaleString('en-IN');
+    result = result.replace(numStr, formatted);
+  }
+
+  if (!/\u20B9|Rs\.?|INR/i.test(result)) {
+    result = '\u20B9' + result;
+  }
+
+  return result;
+}
+
 function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
@@ -77,7 +97,7 @@ export default function PortalServicesSection({ items, color }: Props) {
 
             {item.price_range && (
               <p className={`text-sm font-semibold mt-auto pt-4 border-t ${isDark ? 'border-white/[0.06]' : 'border-gray-100'}`} style={{ color }}>
-                {item.price_range}
+                {formatPriceWithRupee(item.price_range)}
               </p>
             )}
 

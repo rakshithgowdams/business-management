@@ -67,18 +67,20 @@ export default function PortalCaseStudiesSection({ items, color }: Props) {
             <div className="p-4 sm:p-6 md:p-8">
               <div className="flex flex-col lg:flex-row lg:items-start gap-4 sm:gap-6">
                 {(item.before_image_url || item.after_image_url) && (
-                  <div className="flex items-center gap-3 shrink-0">
+                  <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3 shrink-0 w-full lg:w-auto lg:max-w-[320px]">
                     {item.before_image_url && (
                       <div className="relative">
-                        <img src={item.before_image_url} alt="Before" className="w-24 h-18 sm:w-32 sm:h-24 md:w-40 md:h-28 rounded-xl object-cover" />
-                        <span className="absolute bottom-1 left-1 text-[10px] font-bold bg-red-500/90 text-white px-2 py-0.5 rounded-md">BEFORE</span>
+                        <img src={item.before_image_url} alt="Before" className="w-full h-36 sm:h-24 md:h-28 rounded-xl object-cover" />
+                        <span className="absolute top-2 left-2 sm:bottom-1 sm:top-auto sm:left-1 text-[10px] font-bold bg-red-500/90 text-white px-2 py-0.5 rounded-md">BEFORE</span>
                       </div>
                     )}
-                    {item.before_image_url && item.after_image_url && <ArrowRight className={`w-5 h-5 shrink-0 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />}
+                    {item.before_image_url && item.after_image_url && (
+                      <ArrowRight className={`w-5 h-5 shrink-0 mx-auto rotate-90 sm:rotate-0 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+                    )}
                     {item.after_image_url && (
                       <div className="relative">
-                        <img src={item.after_image_url} alt="After" className="w-24 h-18 sm:w-32 sm:h-24 md:w-40 md:h-28 rounded-xl object-cover" />
-                        <span className="absolute bottom-1 left-1 text-[10px] font-bold bg-green-500/90 text-white px-2 py-0.5 rounded-md">AFTER</span>
+                        <img src={item.after_image_url} alt="After" className="w-full h-36 sm:h-24 md:h-28 rounded-xl object-cover" />
+                        <span className="absolute top-2 left-2 sm:bottom-1 sm:top-auto sm:left-1 text-[10px] font-bold bg-green-500/90 text-white px-2 py-0.5 rounded-md">AFTER</span>
                       </div>
                     )}
                   </div>
@@ -143,18 +145,24 @@ export default function PortalCaseStudiesSection({ items, color }: Props) {
 
             <div className="p-4 sm:p-6 space-y-6">
               {(selected.before_image_url || selected.after_image_url) && (
-                <div className="flex items-center gap-4 justify-center flex-wrap">
+                <div className="flex flex-col items-center gap-3">
                   {selected.before_image_url && (
-                    <div className="relative">
-                      <img src={selected.before_image_url} alt="Before" className="rounded-xl max-h-48 sm:max-h-60 object-cover" />
-                      <span className="absolute bottom-2 left-2 text-xs font-bold bg-red-500/90 text-white px-2.5 py-1 rounded-lg">BEFORE</span>
+                    <div className="relative w-full">
+                      <img src={selected.before_image_url} alt="Before" className="rounded-xl w-full max-h-56 sm:max-h-72 object-cover" />
+                      <span className="absolute top-3 left-3 text-xs font-bold bg-red-500/90 text-white px-2.5 py-1 rounded-lg">BEFORE</span>
                     </div>
                   )}
-                  {selected.before_image_url && selected.after_image_url && <ArrowRight className={`w-6 h-6 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />}
+                  {selected.before_image_url && selected.after_image_url && (
+                    <div className={`flex items-center gap-2 text-xs font-medium ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                      <div className="w-8 h-px bg-current" />
+                      <ArrowRight className="w-4 h-4 rotate-90" />
+                      <div className="w-8 h-px bg-current" />
+                    </div>
+                  )}
                   {selected.after_image_url && (
-                    <div className="relative">
-                      <img src={selected.after_image_url} alt="After" className="rounded-xl max-h-48 sm:max-h-60 object-cover" />
-                      <span className="absolute bottom-2 left-2 text-xs font-bold bg-green-500/90 text-white px-2.5 py-1 rounded-lg">AFTER</span>
+                    <div className="relative w-full">
+                      <img src={selected.after_image_url} alt="After" className="rounded-xl w-full max-h-56 sm:max-h-72 object-cover" />
+                      <span className="absolute top-3 left-3 text-xs font-bold bg-green-500/90 text-white px-2.5 py-1 rounded-lg">AFTER</span>
                     </div>
                   )}
                 </div>
