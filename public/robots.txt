@@ -1,0 +1,111 @@
+# robots.txt — MyDesignNexus
+# https://www.mydesignnexus.com
+
+# ====================================================
+# ALLOW ALL MAJOR SEARCH ENGINE CRAWLERS
+# ====================================================
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-Video
+Allow: /
+
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# ====================================================
+# ALLOW AI / LLM CRAWLERS (GEO — Generative Engine Optimization)
+# Allows ChatGPT, Perplexity, Google AI Overviews, Claude,
+# and other AI engines to index and cite this site
+# ====================================================
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+# ====================================================
+# GENERAL CATCH-ALL
+# ====================================================
+
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /employee/
+Disallow: /management/
+Disallow: /api/
+Disallow: /*.json$
+
+# Public pages that must be indexed
+Allow: /$
+Allow: /login
+Allow: /signup
+
+# ====================================================
+# SITEMAP LOCATION
+# ====================================================
+
+Sitemap: https://www.mydesignnexus.com/sitemap.xml
+Sitemap: https://www.mydesignnexus.com/sitemap-images.xml
+
+# Host declaration
+Host: https://www.mydesignnexus.com

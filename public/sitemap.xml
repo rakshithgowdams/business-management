@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+          http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- ============================================================
+       HOMEPAGE
+  ============================================================ -->
+  <url>
+    <loc>https://www.mydesignnexus.com/</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en-in" href="https://www.mydesignnexus.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.mydesignnexus.com/" />
+    <image:image>
+      <image:loc>https://www.mydesignnexus.com/og-image.png</image:loc>
+      <image:title>MyDesignNexus — India's All-in-One Business Operating System</image:title>
+      <image:caption>Business OS dashboard for Indian freelancers and agencies. GST invoicing, CRM, payroll, AI tools and more.</image:caption>
+    </image:image>
+  </url>
+
+  <!-- ============================================================
+       AUTH PAGES
+  ============================================================ -->
+  <url>
+    <loc>https://www.mydesignnexus.com/signup</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/login</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- ============================================================
+       FEATURE LANDING PAGES (Future — for SEO keyword targeting)
+       These URLs represent planned content pages for high-value
+       keyword clusters. Create static pages at these URLs to
+       capture organic search traffic for each feature category.
+  ============================================================ -->
+
+  <!-- Finance & Billing Features -->
+  <url>
+    <loc>https://www.mydesignnexus.com/features/gst-invoice-software-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/features/expense-tracker-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/features/quotation-builder-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/features/gst-tracker-gstr1-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Business Operations Features -->
+  <url>
+    <loc>https://www.mydesignnexus.com/features/crm-software-india-freelancers</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/features/project-management-software-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/features/ai-agreement-builder-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- HR & Team Features -->
+  <url>
+    <loc>https://www.mydesignnexus.com/features/payroll-software-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/features/hr-management-software-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/features/team-collaboration-software-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- AI Features -->
+  <url>
+    <loc>https://www.mydesignnexus.com/features/ai-business-tools-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/features/ai-image-video-generator-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Marketing Features -->
+  <url>
+    <loc>https://www.mydesignnexus.com/features/digital-marketing-software-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/features/smm-agent-social-media-management-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Comparison / Competitor Displacement Pages -->
+  <url>
+    <loc>https://www.mydesignnexus.com/compare/zoho-alternative-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/compare/tally-alternative-crm-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/compare/vyapar-alternative-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.mydesignnexus.com/compare/freshbooks-alternative-india</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog / SEO Content (Future) -->
+  <url>
+    <loc>https://www.mydesignnexus.com/blog</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Pricing -->
+  <url>
+    <loc>https://www.mydesignnexus.com/#pricing</loc>
+    <lastmod>2026-03-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>
