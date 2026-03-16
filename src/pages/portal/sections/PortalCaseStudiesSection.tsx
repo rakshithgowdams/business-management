@@ -127,95 +127,102 @@ export default function PortalCaseStudiesSection({ items, color }: Props) {
 
       {selected && (
         <div
-          className={`fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 transition-opacity duration-300 ${modalVisible ? 'opacity-100' : 'opacity-0'}`}
+          className={`fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6 transition-opacity duration-300 ${modalVisible ? 'opacity-100' : 'opacity-0'}`}
           onClick={closeModal}
         >
           <div
-            className={`rounded-2xl w-full max-w-3xl max-h-[calc(100vh-1rem)] sm:max-h-[calc(100vh-2rem)] overflow-y-auto overscroll-contain border my-2 sm:my-4 transition-all duration-300 ${
+            className={`rounded-2xl w-full max-w-lg max-h-[85vh] overflow-hidden border flex flex-col transition-all duration-300 ${
               modalVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
             } ${isDark ? 'bg-gray-900 border-white/10' : 'bg-white border-gray-200'}`}
             onClick={e => e.stopPropagation()}
           >
-            <div className={`sticky top-0 z-10 flex items-center justify-between p-4 sm:p-5 border-b backdrop-blur-xl ${isDark ? 'bg-gray-900/95 border-white/[0.06]' : 'bg-white/95 border-gray-200'}`}>
-              <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{selected.title}</h3>
-              <button onClick={closeModal} className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/5 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}>
-                <X className="w-5 h-5" />
+            <div className={`flex items-center justify-between px-4 py-3 border-b shrink-0 ${isDark ? 'bg-gray-900 border-white/[0.06]' : 'bg-white border-gray-100'}`}>
+              <div className="flex items-center gap-2 min-w-0">
+                {selected.is_featured && <Star className="w-3.5 h-3.5 shrink-0" style={{ color, fill: color }} />}
+                <h3 className={`font-semibold text-sm truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>{selected.title}</h3>
+              </div>
+              <button onClick={closeModal} className={`p-1.5 rounded-lg transition-colors shrink-0 ml-2 ${isDark ? 'hover:bg-white/5 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}>
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-4 sm:p-6 space-y-6">
-              {(selected.before_image_url || selected.after_image_url) && (
-                <div className="flex flex-col items-center gap-3">
-                  {selected.before_image_url && (
-                    <div className="relative w-full">
-                      <img src={selected.before_image_url} alt="Before" className="rounded-xl w-full max-h-56 sm:max-h-72 object-cover" />
-                      <span className="absolute top-3 left-3 text-xs font-bold bg-red-500/90 text-white px-2.5 py-1 rounded-lg">BEFORE</span>
-                    </div>
-                  )}
-                  {selected.before_image_url && selected.after_image_url && (
-                    <div className={`flex items-center gap-2 text-xs font-medium ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                      <div className="w-8 h-px bg-current" />
-                      <ArrowRight className="w-4 h-4 rotate-90" />
-                      <div className="w-8 h-px bg-current" />
-                    </div>
-                  )}
-                  {selected.after_image_url && (
-                    <div className="relative w-full">
-                      <img src={selected.after_image_url} alt="After" className="rounded-xl w-full max-h-56 sm:max-h-72 object-cover" />
-                      <span className="absolute top-3 left-3 text-xs font-bold bg-green-500/90 text-white px-2.5 py-1 rounded-lg">AFTER</span>
-                    </div>
-                  )}
-                </div>
-              )}
+            <div className="overflow-y-auto overscroll-contain flex-1">
+              <div className="p-4 space-y-4">
+                {selected.client_name && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    {selected.client_name && <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{selected.client_name}</span>}
+                    {selected.industry && <span className="px-2 py-0.5 text-[10px] rounded-md font-medium" style={{ backgroundColor: `${color}15`, color }}>{selected.industry}</span>}
+                  </div>
+                )}
 
-              {selected.challenge && (
-                <div>
-                  <h4 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    <span className="w-2 h-2 rounded-full bg-red-400" /> The Challenge
-                  </h4>
-                  <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>{selected.challenge}</p>
-                </div>
-              )}
-
-              {selected.solution && (
-                <div>
-                  <h4 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} /> Our Solution
-                  </h4>
-                  <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>{selected.solution}</p>
-                </div>
-              )}
-
-              {selected.results && (
-                <div>
-                  <h4 className={`text-sm font-semibold mb-2 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    <TrendingUp className="w-4 h-4 text-green-400" /> Results
-                  </h4>
-                  <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>{selected.results}</p>
-                </div>
-              )}
-
-              {(selected.after_metrics as PortalMetric[]).length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {(selected.after_metrics as PortalMetric[]).map((m, i) => {
-                    const before = (selected.before_metrics as PortalMetric[])[i];
-                    return (
-                      <div key={i} className={`rounded-xl p-4 text-center ${isDark ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                        <p className="text-xl font-bold" style={{ color }}>{m.value}</p>
-                        <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{m.label}</p>
-                        {before && <p className={`text-[11px] mt-0.5 ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>Previously: {before.value}</p>}
+                {(selected.before_image_url || selected.after_image_url) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {selected.before_image_url && (
+                      <div className="relative">
+                        <img src={selected.before_image_url} alt="Before" className="rounded-lg w-full h-32 sm:h-36 object-cover" />
+                        <span className="absolute top-2 left-2 text-[10px] font-bold bg-red-500/90 text-white px-2 py-0.5 rounded-md">BEFORE</span>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
+                    )}
+                    {selected.after_image_url && (
+                      <div className="relative">
+                        <img src={selected.after_image_url} alt="After" className="rounded-lg w-full h-32 sm:h-36 object-cover" />
+                        <span className="absolute top-2 left-2 text-[10px] font-bold bg-green-500/90 text-white px-2 py-0.5 rounded-md">AFTER</span>
+                      </div>
+                    )}
+                  </div>
+                )}
 
-              {selected.testimonial_quote && (
-                <div className="p-4 rounded-xl border-l-2" style={{ borderColor: color, backgroundColor: `${color}05` }}>
-                  <p className={`text-sm italic ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>&ldquo;{selected.testimonial_quote}&rdquo;</p>
-                  {selected.testimonial_author && <p className={`text-xs mt-2 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>-- {selected.testimonial_author}</p>}
-                </div>
-              )}
+                {(selected.challenge || selected.solution || selected.results) && (
+                  <div className="space-y-3">
+                    {selected.challenge && (
+                      <div>
+                        <h4 className={`text-xs font-semibold mb-1 flex items-center gap-1.5 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-400" /> Challenge
+                        </h4>
+                        <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{selected.challenge}</p>
+                      </div>
+                    )}
+                    {selected.solution && (
+                      <div>
+                        <h4 className={`text-xs font-semibold mb-1 flex items-center gap-1.5 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} /> Solution
+                        </h4>
+                        <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{selected.solution}</p>
+                      </div>
+                    )}
+                    {selected.results && (
+                      <div>
+                        <h4 className={`text-xs font-semibold mb-1 flex items-center gap-1.5 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          <TrendingUp className="w-3 h-3 text-green-400" /> Results
+                        </h4>
+                        <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{selected.results}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {(selected.after_metrics as PortalMetric[]).length > 0 && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {(selected.after_metrics as PortalMetric[]).slice(0, 6).map((m, i) => {
+                      const before = (selected.before_metrics as PortalMetric[])[i];
+                      return (
+                        <div key={i} className={`rounded-lg p-2.5 text-center ${isDark ? 'bg-gray-800/80' : 'bg-gray-50'}`}>
+                          <p className="text-sm font-bold" style={{ color }}>{m.value}</p>
+                          <p className={`text-[10px] mt-0.5 leading-tight ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{m.label}</p>
+                          {before && <p className={`text-[9px] mt-0.5 ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>was {before.value}</p>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {selected.testimonial_quote && (
+                  <div className="px-3 py-2.5 rounded-lg border-l-2" style={{ borderColor: color, backgroundColor: `${color}06` }}>
+                    <p className={`text-xs italic leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>&ldquo;{selected.testimonial_quote}&rdquo;</p>
+                    {selected.testimonial_author && <p className={`text-[10px] mt-1.5 font-medium ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>-- {selected.testimonial_author}</p>}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
