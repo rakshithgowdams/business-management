@@ -7,7 +7,7 @@ import {
   LogOut, X, ChevronRight, Activity, Brain, CalendarDays, Send,
   FolderArchive, Palette, Share2, Zap, PanelLeftClose, PanelLeftOpen,
   ChevronDown, Sparkles, TrendingUp, Building2, Layers, ListChecks,
-  Lock, MessageCircle,
+  Lock, MessageCircle, Shield,
 } from 'lucide-react';
 import { useTeamAuth } from '../context/TeamAuthContext';
 import TeamAIStatusBar from './TeamAIStatusBar';
@@ -61,6 +61,7 @@ const allNavGroups: NavGroup[] = [
     items: [
       { to: '/projects', icon: FolderKanban, label: 'Projects', permissionKey: 'projects' },
       { to: '/clients', icon: Users, label: 'Clients', permissionKey: 'clients' },
+      { to: '/client-portal', icon: Shield, label: 'Client Portal', permissionKey: 'clients', badge: 'NEW' },
       { to: '/agreements', icon: FileSignature, label: 'Agreements', badge: 'AI', permissionKey: 'agreements' },
       { to: '/documents', icon: FolderArchive, label: 'Documents', permissionKey: 'documents' },
       { to: '/follow-ups', icon: Send, label: 'Follow-ups', badge: 'AI', permissionKey: 'follow_ups' },

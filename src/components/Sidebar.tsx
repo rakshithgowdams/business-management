@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Wallet, DollarSign, Target, FileText, FileCheck, Ligature as FileSignature, CalendarClock, RefreshCw, BarChart3, FolderKanban, Users, Briefcase, Rocket, ClipboardList, Bot, Settings, LogOut, X, ChevronRight, Activity, Brain, CalendarDays, Send, FolderArchive, Palette, Share2, Zap, PanelLeftClose, PanelLeftOpen, ChevronDown, Sparkles, TrendingUp, Building2, Layers, ListChecks, MessageCircle, UsersRound, HardHat, Megaphone, GitBranch, Globe, Inbox } from 'lucide-react';
+import { LayoutDashboard, Wallet, DollarSign, Target, FileText, FileCheck, Ligature as FileSignature, CalendarClock, RefreshCw, BarChart3, FolderKanban, Users, Briefcase, Rocket, ClipboardList, Bot, Settings, LogOut, X, ChevronRight, Activity, Brain, CalendarDays, Send, FolderArchive, Palette, Share2, Zap, PanelLeftClose, PanelLeftOpen, ChevronDown, Sparkles, TrendingUp, Building2, Layers, ListChecks, MessageCircle, UsersRound, HardHat, Megaphone, GitBranch, Globe, Inbox, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
@@ -54,6 +54,7 @@ const navGroups: NavGroup[] = [
       { to: '/dashboard/projects', icon: FolderKanban, label: 'Projects' },
       { to: '/dashboard/teams', icon: UsersRound, label: 'Teams' },
       { to: '/dashboard/clients', icon: Users, label: 'Clients' },
+      { to: '/dashboard/client-portal', icon: Shield, label: 'Client Portal', badge: 'NEW' },
       { to: '/dashboard/agreements', icon: FileSignature, label: 'Agreements', badge: 'AI' },
       { to: '/dashboard/documents', icon: FolderArchive, label: 'Documents' },
       { to: '/dashboard/follow-ups', icon: Send, label: 'Follow-ups', badge: 'AI' },

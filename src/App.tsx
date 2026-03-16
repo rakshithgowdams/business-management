@@ -63,6 +63,10 @@ const DigitalMarketingHub = lazy(() => import('./pages/dashboard/digitalmarketin
 const PipelineHub = lazy(() => import('./pages/dashboard/pipeline/PipelineHub'));
 const WebsiteBuilder = lazy(() => import('./pages/dashboard/websitebuilder/WebsiteBuilder'));
 const WebsiteLeads = lazy(() => import('./pages/dashboard/websitebuilder/WebsiteLeads'));
+const PortalList = lazy(() => import('./pages/dashboard/portal/PortalList'));
+const PortalManager = lazy(() => import('./pages/dashboard/portal/PortalManager'));
+const PortalLogin = lazy(() => import('./pages/portal/PortalLogin'));
+const PortalView = lazy(() => import('./pages/portal/PortalView'));
 
 function PageLoader() {
   return (
@@ -163,6 +167,8 @@ function teamRoutes(basePath: string) {
       <Route path="messenger" element={<PG perm="messenger" basePath={basePath}><Messenger /></PG>} />
       <Route path="website-builder" element={<PG perm="projects" basePath={basePath}><WebsiteBuilder /></PG>} />
       <Route path="website-leads" element={<PG perm="projects" basePath={basePath}><WebsiteLeads /></PG>} />
+      <Route path="client-portal" element={<PG perm="clients" basePath={basePath}><PortalList /></PG>} />
+      <Route path="client-portal/:id" element={<PG perm="clients" basePath={basePath}><PortalManager /></PG>} />
       <Route path="*" element={<NotFound />} />
     </>
   );
@@ -237,6 +243,8 @@ export default function App() {
         <Route path="messenger" element={<TeamAuthProvider><Messenger /></TeamAuthProvider>} />
         <Route path="website-builder" element={<WebsiteBuilder />} />
         <Route path="website-leads" element={<WebsiteLeads />} />
+        <Route path="client-portal" element={<PortalList />} />
+        <Route path="client-portal/:id" element={<PortalManager />} />
         <Route path="settings" element={<Settings />} />
         <Route path="profile" element={<UserProfile />} />
         <Route path="*" element={<NotFound />} />
@@ -250,6 +258,8 @@ export default function App() {
         {teamRoutes('/management/dashboard')}
       </Route>
 
+      <Route path="/portal/:slug" element={<PortalLogin />} />
+      <Route path="/portal/:slug/view" element={<PortalView />} />
       <Route path="/website/preview/:subdomain" element={<WebsitePublicPreview />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
