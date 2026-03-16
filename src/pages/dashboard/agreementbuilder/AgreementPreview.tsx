@@ -106,7 +106,7 @@ function AgreementDocument({ draft }: AgreementDocProps) {
       <div style={{ background: theme.headerBg, padding: '18px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', printColorAdjust: 'exact', WebkitPrintColorAdjust: 'exact' } as React.CSSProperties}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {draft.companyLogo ? (
-            <img src={draft.companyLogo} alt="logo" style={{ maxHeight: 48, maxWidth: 140, objectFit: 'contain' }} crossOrigin="anonymous" />
+            <img src={draft.companyLogo} alt="logo" style={{ maxHeight: 64, maxWidth: 200, objectFit: 'contain' }} crossOrigin="anonymous" />
           ) : (
             <div>
               <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em' }}>{draft.companyProfile.companyName || 'COMPANY NAME'}</div>
@@ -554,7 +554,7 @@ export default function AgreementPreview({ draft }: Props) {
     setDownloading(true);
     const toastId = toast.loading('Generating PDF...', { duration: 0 });
     try {
-      const pdf = generateAgreementPdf(draft);
+      const pdf = await generateAgreementPdf(draft);
       pdf.save(filename);
       toast.success('PDF downloaded!', { id: toastId });
     } catch (err) {
@@ -565,10 +565,10 @@ export default function AgreementPreview({ draft }: Props) {
     }
   };
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
     setPrinting(true);
     try {
-      const pdf = generateAgreementPdf(draft);
+      const pdf = await generateAgreementPdf(draft);
       const blobUrl = pdf.output('bloburl');
       const printWin = window.open(blobUrl as unknown as string, '_blank');
       if (printWin) {

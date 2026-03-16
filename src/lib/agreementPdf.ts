@@ -63,6 +63,28 @@ interface Ctx {
   theme: typeof THEMES['bw'];
   draft: AgreementDraft;
   sectionNum: number;
+  logoData: string | null;
+  logoW: number;
+  logoH: number;
+}
+
+function loadImageAsBase64(url: string): Promise<{ data: string; w: number; h: number }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const c = canvas.getContext('2d');
+      if (!c) { reject(new Error('no ctx')); return; }
+      c.drawImage(img, 0, 0);
+      const data = canvas.toDataURL('image/png');
+      resolve({ data, w: img.naturalWidth, h: img.naturalHeight });
+    };
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = url;
+  });
 }
 
 function setColor(ctx: Ctx, c: number[]) {
@@ -82,16 +104,31 @@ function drawPageHeader(ctx: Ctx) {
   setFill(ctx, theme.headerBg);
   pdf.rect(0, 0, PAGE_W, MARGIN_TOP + HEADER_H, 'F');
 
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(11);
-  setColor(ctx, [255, 255, 255]);
-  pdf.text(draft.companyProfile.companyName || 'COMPANY', MARGIN_L, MARGIN_TOP + 5);
+  if (ctx.logoData) {
+    const maxLogoH = 16;
+    const maxLogoW = 50;
+    const ratio = ctx.logoW / ctx.logoH;
+    let drawW = maxLogoH * ratio;
+    let drawH = maxLogoH;
+    if (drawW > maxLogoW) {
+      drawW = maxLogoW;
+      drawH = maxLogoW / ratio;
+    }
+    const logoY = MARGIN_TOP + (HEADER_H - drawH) / 2;
+    pdf.addImage(ctx.logoData, 'PNG', MARGIN_L, logoY, drawW, drawH);
+  } else {
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(11);
+    setColor(ctx, [255, 255, 255]);
+    pdf.text(draft.companyProfile.companyName || 'COMPANY', MARGIN_L, MARGIN_TOP + 5);
+  }
 
   pdf.setFontSize(7);
   pdf.setFont('helvetica', 'normal');
   setColor(ctx, [220, 220, 230]);
   const rightX = PAGE_W - MARGIN_R;
   let hY = MARGIN_TOP + 3;
+  if (draft.companyProfile.companyName) { pdf.setFont('helvetica', 'bold'); pdf.text(draft.companyProfile.companyName.toUpperCase(), rightX, hY, { align: 'right' }); pdf.setFont('helvetica', 'normal'); hY += 4; }
   if (draft.companyProfile.email) { pdf.text(draft.companyProfile.email, rightX, hY, { align: 'right' }); hY += 4; }
   if (draft.companyProfile.phone) { pdf.text('Tel: ' + draft.companyProfile.phone, rightX, hY, { align: 'right' }); hY += 4; }
   if (draft.companyProfile.website) { pdf.text(draft.companyProfile.website, rightX, hY, { align: 'right' }); hY += 4; }
@@ -328,12 +365,27 @@ function countTotalPages(draft: AgreementDraft): number {
   return Math.max(1, Math.ceil(estLines / linesPerPage));
 }
 
-export function generateAgreementPdf(draft: AgreementDraft): jsPDF {
+export async function generateAgreementPdf(draft: AgreementDraft): Promise<jsPDF> {
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const themeKey = (draft.pdfTheme as string) || 'bw';
   const theme = THEMES[themeKey] || THEMES.bw;
 
   const estPages = countTotalPages(draft);
+
+  let logoData: string | null = null;
+  let logoW = 0;
+  let logoH = 0;
+
+  if (draft.companyLogo) {
+    try {
+      const result = await loadImageAsBase64(draft.companyLogo);
+      logoData = result.data;
+      logoW = result.w;
+      logoH = result.h;
+    } catch {
+      // logo load failed, fall back to text
+    }
+  }
 
   const ctx: Ctx = {
     pdf,
@@ -343,6 +395,9 @@ export function generateAgreementPdf(draft: AgreementDraft): jsPDF {
     theme,
     draft,
     sectionNum: 0,
+    logoData,
+    logoW,
+    logoH,
   };
 
   drawPageHeader(ctx);
