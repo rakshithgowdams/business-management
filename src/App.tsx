@@ -66,6 +66,7 @@ const WebsiteBuilder = lazy(() => import('./pages/dashboard/websitebuilder/Websi
 const WebsiteLeads = lazy(() => import('./pages/dashboard/websitebuilder/WebsiteLeads'));
 const PortalList = lazy(() => import('./pages/dashboard/portal/PortalList'));
 const PortalManager = lazy(() => import('./pages/dashboard/portal/PortalManager'));
+const PasswordVault = lazy(() => import('./pages/dashboard/passwords/PasswordVault'));
 const PortalLogin = lazy(() => import('./pages/portal/PortalLogin'));
 const PortalView = lazy(() => import('./pages/portal/PortalView'));
 
@@ -170,6 +171,7 @@ function teamRoutes(basePath: string) {
       <Route path="website-leads" element={<PG perm="projects" basePath={basePath}><WebsiteLeads /></PG>} />
       <Route path="client-portal" element={<PG perm="clients" basePath={basePath}><PortalList /></PG>} />
       <Route path="client-portal/:id" element={<PG perm="clients" basePath={basePath}><PortalManager /></PG>} />
+      <Route path="password-vault" element={<PG perm="projects" basePath={basePath}><PasswordVault /></PG>} />
       <Route path="*" element={<NotFound />} />
     </>
   );
@@ -246,6 +248,7 @@ export default function App() {
         <Route path="website-leads" element={<WebsiteLeads />} />
         <Route path="client-portal" element={<PortalList />} />
         <Route path="client-portal/:id" element={<PortalManager />} />
+        <Route path="password-vault" element={<PasswordVault />} />
         <Route path="settings" element={<Settings />} />
         <Route path="profile" element={<UserProfile />} />
         <Route path="*" element={<NotFound />} />
