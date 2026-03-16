@@ -41,6 +41,7 @@ export default function PortalView() {
   const [activeSection, setActiveSection] = useState<string>('');
   const [showNav, setShowNav] = useState(false);
   const [fadeIn, setFadeIn] = useState(false);
+  const [sectionKey, setSectionKey] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -87,6 +88,7 @@ export default function PortalView() {
   const handleSectionChange = (section: string) => {
     setActiveSection(section);
     setShowNav(false);
+    setSectionKey(k => k + 1);
     trackSection(section);
   };
 
@@ -115,19 +117,19 @@ export default function PortalView() {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <header className={`sticky top-0 z-40 backdrop-blur-xl border-b transition-colors duration-300 ${isDark ? 'bg-gray-900/90 border-white/[0.06]' : 'bg-white/90 border-gray-200'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               {portal.logo ? (
-                <img src={portal.logo} alt="" className="h-8 object-contain" />
+                <img src={portal.logo} alt="" className="h-7 sm:h-8 object-contain shrink-0" />
               ) : (
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: color }}>
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm shrink-0" style={{ backgroundColor: color }}>
                   {(owner.business_name || portal.name || '?')[0].toUpperCase()}
                 </div>
               )}
-              <div>
-                <h1 className="text-sm font-semibold">{portal.name}</h1>
-                {owner.business_name && <p className={`text-[11px] ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{owner.business_name}</p>}
+              <div className="min-w-0">
+                <h1 className="text-xs sm:text-sm font-semibold truncate">{portal.name}</h1>
+                {owner.business_name && <p className={`text-[10px] sm:text-[11px] truncate ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{owner.business_name}</p>}
               </div>
             </div>
 
@@ -148,10 +150,10 @@ export default function PortalView() {
               ))}
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 sm:gap-1.5">
               <button
                 onClick={toggleTheme}
-                className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/5 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-800'}`}
+                className={`p-1.5 sm:p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/5 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-800'}`}
                 title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -159,32 +161,36 @@ export default function PortalView() {
               <div className="md:hidden relative">
                 <button
                   onClick={() => setShowNav(!showNav)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm ${isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'}`}
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm ${isDark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700'}`}
                 >
-                  {SECTION_LABELS[activeSection]}
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showNav ? 'rotate-180' : ''}`} />
+                  <span className="truncate max-w-[80px]">{SECTION_LABELS[activeSection]}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform ${showNav ? 'rotate-180' : ''}`} />
                 </button>
                 {showNav && (
-                  <div className={`absolute right-0 top-full mt-1 border rounded-xl overflow-hidden shadow-xl min-w-[180px] z-50 ${isDark ? 'bg-gray-800 border-white/10' : 'bg-white border-gray-200'}`}>
-                    {visibleSections.map(s => (
-                      <button
-                        key={s}
-                        onClick={() => handleSectionChange(s)}
-                        className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
-                          activeSection === s
-                            ? isDark ? 'text-white bg-white/5' : 'text-gray-900 bg-gray-50'
-                            : isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-                        }`}
-                      >
-                        {SECTION_LABELS[s]}
-                      </button>
-                    ))}
-                  </div>
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setShowNav(false)} />
+                    <div className={`absolute right-0 top-full mt-1 border rounded-xl overflow-hidden shadow-xl min-w-[180px] z-50 ${isDark ? 'bg-gray-800 border-white/10' : 'bg-white border-gray-200'}`}>
+                      {visibleSections.map(s => (
+                        <button
+                          key={s}
+                          onClick={() => handleSectionChange(s)}
+                          className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                            activeSection === s
+                              ? 'font-medium'
+                              : isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                          }`}
+                          style={activeSection === s ? { color, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)' } : undefined}
+                        >
+                          {SECTION_LABELS[s]}
+                        </button>
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
               <button
                 onClick={handleLogout}
-                className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/5 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-800'}`}
+                className={`p-1.5 sm:p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/5 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-800'}`}
                 title="Logout"
               >
                 <LogOut className="w-4 h-4" />
@@ -196,7 +202,10 @@ export default function PortalView() {
 
       <PortalHeroSection portal={portal} owner={owner} color={color} />
 
-      <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 transition-all duration-700 ${fadeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <main
+        key={sectionKey}
+        className={`max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12 transition-all duration-700 ${fadeIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+      >
         {activeSection === 'announcements' && sections.announcements && (
           <PortalAnnouncementsSection items={data.announcements} color={color} />
         )}
@@ -226,8 +235,8 @@ export default function PortalView() {
         )}
       </main>
 
-      <footer className={`border-t py-8 transition-colors duration-300 ${isDark ? 'border-white/[0.06]' : 'border-gray-200'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <footer className={`border-t py-6 sm:py-8 transition-colors duration-300 ${isDark ? 'border-white/[0.06]' : 'border-gray-200'}`}>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               {portal.logo ? (

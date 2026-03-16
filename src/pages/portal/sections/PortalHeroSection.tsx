@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePortalTheme } from '../../../context/PortalThemeContext';
 
 interface Props {
@@ -7,74 +7,112 @@ interface Props {
   color: string;
 }
 
+function hexToRgb(hex: string): string {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `${r},${g},${b}`;
+}
+
 export default function PortalHeroSection({ portal, owner, color }: Props) {
   const { isDark } = usePortalTheme();
   const [visible, setVisible] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), 50);
+    const timer = setTimeout(() => setVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!sectionRef.current) return;
+    const rect = sectionRef.current.getBoundingClientRect();
+    setMousePos({
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height,
+    });
+  };
+
   if (!portal.welcome && !portal.description && !owner.business_name) return null;
 
+  const rgb = hexToRgb(color);
+
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
+    <section
+      ref={sectionRef}
+      onMouseMove={handleMouseMove}
+      className="relative overflow-hidden"
+    >
+      <style>{`
+        @keyframes portalFloat1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,-20px) scale(1.1); } }
+        @keyframes portalFloat2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-20px,30px) scale(0.9); } }
+        @keyframes portalFloat3 { 0%,100% { transform: translate(0,0); } 33% { transform: translate(15px,15px); } 66% { transform: translate(-10px,5px); } }
+        @keyframes portalShimmer { 0% { background-position: 200% center; } 100% { background-position: -200% center; } }
+        @keyframes portalLineSlide { 0% { transform: translateX(-100%); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateX(100%); opacity: 0; } }
+        @keyframes portalGlowPulse { 0%,100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.2); } }
+        .portal-text-shimmer {
+          background: linear-gradient(90deg, ${isDark ? '#fff' : '#111'} 0%, rgb(${rgb}) 50%, ${isDark ? '#fff' : '#111'} 100%);
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: portalShimmer 4s linear infinite;
+        }
+      `}</style>
+
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-[140px] opacity-20"
-          style={{ backgroundColor: color }}
+          className="absolute w-[500px] h-[500px] rounded-full blur-[160px] opacity-15"
+          style={{
+            backgroundColor: color,
+            left: `${mousePos.x * 100}%`,
+            top: `${mousePos.y * 100}%`,
+            transform: 'translate(-50%, -50%)',
+            transition: 'left 0.3s ease-out, top 0.3s ease-out',
+          }}
+        />
+
+        <div
+          className="absolute top-[10%] left-[15%] w-3 h-3 rounded-full"
+          style={{ backgroundColor: color, opacity: 0.3, animation: 'portalFloat1 6s ease-in-out infinite' }}
         />
         <div
-          className="absolute bottom-0 right-0 w-[400px] h-[300px] rounded-full blur-[120px] opacity-10"
-          style={{ backgroundColor: color }}
+          className="absolute top-[25%] right-[20%] w-2 h-2 rounded-full"
+          style={{ backgroundColor: color, opacity: 0.25, animation: 'portalFloat2 8s ease-in-out infinite' }}
         />
         <div
-          className="absolute top-1/4 left-[10%] w-3 h-3 rounded-full animate-pulse"
-          style={{ backgroundColor: color, opacity: 0.4 }}
+          className="absolute bottom-[30%] left-[25%] w-4 h-4 rounded-full"
+          style={{ backgroundColor: color, opacity: 0.15, animation: 'portalFloat3 10s ease-in-out infinite' }}
         />
         <div
-          className="absolute top-[20%] right-[15%] w-2 h-2 rounded-full animate-bounce"
-          style={{ backgroundColor: color, opacity: 0.3, animationDuration: '3s' }}
+          className="absolute top-[60%] right-[10%] w-2.5 h-2.5 rounded-full"
+          style={{ backgroundColor: color, opacity: 0.2, animation: 'portalFloat1 7s ease-in-out infinite 1s' }}
         />
         <div
-          className="absolute bottom-[30%] left-[20%] w-4 h-4 rounded-full animate-ping"
-          style={{ backgroundColor: color, opacity: 0.15, animationDuration: '4s' }}
+          className="absolute bottom-[15%] left-[10%] w-1.5 h-1.5 rounded-full"
+          style={{ backgroundColor: color, opacity: 0.3, animation: 'portalFloat2 9s ease-in-out infinite 0.5s' }}
         />
         <div
-          className="absolute top-[40%] right-[25%] w-2.5 h-2.5 rounded-full animate-pulse"
-          style={{ backgroundColor: color, opacity: 0.25, animationDuration: '2.5s' }}
+          className="absolute top-[45%] left-[60%] w-2 h-2 rounded-full"
+          style={{ backgroundColor: color, opacity: 0.2, animation: 'portalFloat3 11s ease-in-out infinite 2s' }}
         />
-        <div
-          className="absolute bottom-[20%] right-[10%] w-3 h-3 rounded-full animate-bounce"
-          style={{ backgroundColor: color, opacity: 0.2, animationDuration: '3.5s' }}
-        />
-        <div
-          className="absolute top-[60%] left-[5%] w-1.5 h-1.5 rounded-full animate-ping"
-          style={{ backgroundColor: color, opacity: 0.2, animationDuration: '5s' }}
-        />
+
+        <div className="absolute top-[30%] left-0 right-0 h-px overflow-hidden opacity-20">
+          <div className="h-full w-1/3" style={{ backgroundColor: color, animation: 'portalLineSlide 5s linear infinite' }} />
+        </div>
+        <div className="absolute top-[70%] left-0 right-0 h-px overflow-hidden opacity-10">
+          <div className="h-full w-1/4" style={{ backgroundColor: color, animation: 'portalLineSlide 7s linear infinite 2s' }} />
+        </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center relative">
-        {portal.logo && (
-          <div
-            className={`transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-            style={{ transitionDelay: '0ms' }}
-          >
-            <img
-              src={portal.logo}
-              alt={portal.name}
-              className="h-16 sm:h-20 object-contain mx-auto mb-8"
-            />
-          </div>
-        )}
-
-        {(portal.welcome || (!portal.welcome && owner.business_name)) && (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-28 text-center relative">
+        {(portal.welcome || owner.business_name) && (
           <h2
-            className={`text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight transition-all duration-700 ${
-              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            } ${isDark ? 'text-white' : 'text-gray-900'}`}
-            style={{ transitionDelay: '100ms' }}
+            className={`text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 leading-tight transition-all duration-1000 ease-out portal-text-shimmer ${
+              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
           >
             {portal.welcome || `Welcome to ${owner.business_name}`}
           </h2>
@@ -82,8 +120,8 @@ export default function PortalHeroSection({ portal, owner, color }: Props) {
 
         {portal.description && (
           <p
-            className={`text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed transition-all duration-700 ${
-              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            className={`text-base sm:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed transition-all duration-1000 ease-out ${
+              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             } ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
             style={{ transitionDelay: '200ms' }}
           >
@@ -91,53 +129,18 @@ export default function PortalHeroSection({ portal, owner, color }: Props) {
           </p>
         )}
 
-        {owner.full_name && (
-          <div
-            className={`mt-10 inline-flex items-center gap-3 px-5 py-3 rounded-2xl border transition-all duration-700 ${
-              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            } ${isDark ? 'bg-gray-800/50 border-white/[0.06]' : 'bg-white border-gray-200'}`}
-            style={{ transitionDelay: '300ms' }}
-          >
-            {owner.avatar_url ? (
-              <img
-                src={owner.avatar_url}
-                alt={owner.full_name}
-                className="w-10 h-10 rounded-full object-cover"
-                style={{ boxShadow: `0 0 0 2px ${color}40` }}
-              />
-            ) : (
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm"
-                style={{ backgroundColor: `${color}20`, color }}
-              >
-                {owner.full_name
-                  .split(' ')
-                  .map(w => w[0])
-                  .join('')
-                  .toUpperCase()
-                  .slice(0, 2)}
-              </div>
-            )}
-            <div className="text-left">
-              <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                {owner.full_name}
-              </p>
-              {owner.business_name && (
-                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {owner.business_name}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
         <div
-          className={`mt-12 flex justify-center transition-all duration-700 ${
-            visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          className={`mt-12 flex items-center justify-center gap-3 transition-all duration-1000 ease-out ${
+            visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
           style={{ transitionDelay: '400ms' }}
         >
-          <div className="h-px w-24 rounded-full" style={{ backgroundColor: `${color}30` }} />
+          <div className="h-px w-16 sm:w-24 rounded-full" style={{ backgroundColor: `${color}30` }} />
+          <div
+            className="w-2 h-2 rounded-full"
+            style={{ backgroundColor: color, animation: 'portalGlowPulse 2s ease-in-out infinite' }}
+          />
+          <div className="h-px w-16 sm:w-24 rounded-full" style={{ backgroundColor: `${color}30` }} />
         </div>
       </div>
     </section>
