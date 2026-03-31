@@ -126,11 +126,11 @@ export default function LeaveOverview() {
                   <div className="flex items-center gap-2">
                     <p className="font-medium text-white text-sm">
                       {(req.leave_type as any)?.name || 'Leave'}
-                      {req.is_half_day && <span className="text-xs text-gray-400 ml-1">(Half Day — {req.half_day_session})</span>}
+                      {req.half_day && <span className="text-xs text-gray-400 ml-1">(Half Day)</span>}
                     </p>
                   </div>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    {formatDate(req.start_date)} – {formatDate(req.end_date)} · {req.days_requested} day{req.days_requested > 1 ? 's' : ''}
+                    {formatDate(req.from_date)} – {formatDate(req.to_date)} · {req.days_count} day{req.days_count > 1 ? 's' : ''}
                   </p>
                   {req.reason && <p className="text-xs text-gray-500 mt-0.5">{req.reason}</p>}
                 </div>

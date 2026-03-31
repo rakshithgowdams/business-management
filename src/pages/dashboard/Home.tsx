@@ -423,7 +423,7 @@ export default function Home() {
       setLoaded(p => ({ ...p, employees: true }));
     }).catch(() => setLoaded(p => ({ ...p, employees: true })));
 
-    const hrLeavesPromise = supabase.from('hr_leave_requests').select('id,employee_name,leave_type_name,from_date,to_date,days_count,status').eq('user_id', user.id).order('created_at', { ascending: false }).limit(30).then(r => r.data ?? []);
+    const hrLeavesPromise = supabase.from('hr_leave_requests').select('id,leave_type_name,from_date,to_date,days_count,status,employee:employee_id(full_name)').eq('user_id', user.id).order('created_at', { ascending: false }).limit(30).then(r => r.data ?? []);
 
     const hrJobsPromise = supabase.from('hr_job_postings').select('id,title,department,status,openings_count').eq('user_id', user.id).eq('status', 'open').limit(20).then(r => r.data ?? []);
 
@@ -446,8 +446,8 @@ export default function Home() {
         openJobPostings: jobs.length,
         pendingAppraisals,
         totalLeaveRequests: leaves.length,
-        recentLeaves: leaves.slice(0, 5).map((l: {id: string; employee_name?: string; leave_type_name?: string; from_date?: string; days_count?: number; status?: string}) => ({
-          id: l.id, employee_name: l.employee_name || 'Employee', leave_type_name: l.leave_type_name || 'Leave',
+        recentLeaves: leaves.slice(0, 5).map((l: {id: string; employee?: {full_name?: string} | null; leave_type_name?: string; from_date?: string; days_count?: number; status?: string}) => ({
+          id: l.id, employee_name: (l.employee as any)?.full_name || 'Employee', leave_type_name: l.leave_type_name || 'Leave',
           from_date: l.from_date || '', days_count: Number(l.days_count || 1), status: l.status || 'pending',
         })),
       });

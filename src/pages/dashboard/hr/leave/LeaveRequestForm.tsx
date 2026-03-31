@@ -28,12 +28,12 @@ export default function LeaveRequestForm() {
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
   const [employees, setEmployees] = useState<Emp[]>([]);
   const [form, setForm] = useState({
-    employee_id: '', leave_type_id: '', start_date: '', end_date: '',
-    reason: '', is_half_day: false, half_day_session: 'Morning',
+    employee_id: '', leave_type_id: '', from_date: '', to_date: '',
+    reason: '', half_day: false,
     status: 'Pending',
   });
 
-  const days = form.is_half_day ? 0.5 : getDaysBetween(form.start_date, form.end_date);
+  const days = form.half_day ? 0.5 : getDaysBetween(form.from_date, form.to_date);
 
   useEffect(() => {
     if (!user) return;
@@ -53,9 +53,9 @@ export default function LeaveRequestForm() {
     if (!user) return;
     if (!form.employee_id) { toast.error('Select an employee'); return; }
     if (!form.leave_type_id) { toast.error('Select a leave type'); return; }
-    if (!form.start_date) { toast.error('Select a start date'); return; }
+    if (!form.from_date) { toast.error('Select a start date'); return; }
     setSaving(true);
-    const payload = { ...form, user_id: user.id, days_requested: days };
+    const payload = { ...form, user_id: user.id, days_count: days };
     const { error } = isEdit
       ? await supabase.from('hr_leave_requests').update(payload).eq('id', id)
       : await supabase.from('hr_leave_requests').insert(payload);
@@ -102,32 +102,26 @@ export default function LeaveRequestForm() {
 
             <div>
               <label className="block text-xs text-gray-400 mb-1.5">Start Date</label>
-              <input type="date" value={form.start_date} onChange={(e) => set('start_date', e.target.value)} className={inputClass} required />
+              <input type="date" value={form.from_date} onChange={(e) => set('from_date', e.target.value)} className={inputClass} required />
             </div>
             <div>
               <label className="block text-xs text-gray-400 mb-1.5">End Date</label>
-              <input type="date" value={form.end_date} onChange={(e) => set('end_date', e.target.value)} className={inputClass} disabled={form.is_half_day} />
+              <input type="date" value={form.to_date} onChange={(e) => set('to_date', e.target.value)} className={inputClass} disabled={form.half_day} />
             </div>
 
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={form.is_half_day}
+                  checked={form.half_day}
                   onChange={(e) => {
-                    set('is_half_day', e.target.checked);
-                    if (e.target.checked) set('end_date', form.start_date);
+                    set('half_day', e.target.checked);
+                    if (e.target.checked) set('to_date', form.from_date);
                   }}
                   className="rounded border-white/20"
                 />
                 <span className="text-sm text-gray-300">Half Day</span>
               </label>
-              {form.is_half_day && (
-                <select value={form.half_day_session} onChange={(e) => set('half_day_session', e.target.value)} className="px-3 py-1.5 bg-dark-900 border border-white/10 rounded-lg text-white text-sm">
-                  <option value="Morning">Morning</option>
-                  <option value="Afternoon">Afternoon</option>
-                </select>
-              )}
             </div>
 
             {days > 0 && (
